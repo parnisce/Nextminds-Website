@@ -1,0 +1,7 @@
+{
+  "name": "nextminds-website",
+  "private": true,
+  "scripts": {
+    "build": "cd app && npm install && npx vite build && node scripts/pages-output.mjs"
+  }
+}

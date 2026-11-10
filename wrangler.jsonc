@@ -1,0 +1,6 @@
+{
+  "name": "nextminds-website",
+  "pages_build_output_dir": "./app/dist/pages",
+  "compatibility_date": "2025-05-01",
+  "compatibility_flags": ["nodejs_compat"]
+}

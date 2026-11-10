@@ -14,7 +14,7 @@
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
-    "@higgsfield/quanta": "workspace:*",
+    "@higgsfield/quanta": "*",
     "lucide-react": "^1.23.0",
     "zod": "^4.4.3"
   },

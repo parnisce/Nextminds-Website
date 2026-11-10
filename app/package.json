@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "vite dev",
     "dev:design": "HF_DESIGN_INSPECTOR=1 vite dev --mode design",
-    "build": "bun run check:ui && tsr generate && tsc --noEmit && vite build",
+    "build": "npm run check:ui && tsr generate && tsc --noEmit && vite build",
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "postinstall": "node scripts/verify-install.mjs",
@@ -22,10 +22,10 @@
   },
   "dependencies": {
     "@base-ui/react": "1.5.0",
-    "@higgsfield/app-landing": "workspace:*",
-    "@higgsfield/fnf": "workspace:*",
-    "@higgsfield/fnf-react": "workspace:*",
-    "@higgsfield/quanta": "workspace:*",
+    "@higgsfield/app-landing": "*",
+    "@higgsfield/fnf": "*",
+    "@higgsfield/fnf-react": "*",
+    "@higgsfield/quanta": "*",
     "@phosphor-icons/react": "^2.1.10",
     "@shadcn/react": "^0.2.1",
     "@tailwindcss/vite": "^4.3.2",
@@ -74,6 +74,6 @@
     "vite-plugin-svgr": "^5.2.0"
   },
   "overrides": {
-    "@types/react": "19.2.15"
+    "@types/react": "$@types/react"
   }
 }
