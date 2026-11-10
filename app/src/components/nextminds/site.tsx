@@ -161,12 +161,11 @@ function Rise({
 }
 
 const navLinks = [
+  ["Home", "#"],
   ["Services", "#services"],
-  ["About", "#about"],
+  ["About Us", "#about"],
   ["Why Us", "#why"],
-  ["Process", "#process"],
-  ["Clients", "#clients"],
-  ["Contact", "#contact"],
+  ["Testimonials", "#clients"],
 ] as const;
 
 export function Nav() {
@@ -194,7 +193,7 @@ export function Nav() {
           </a>
         ))}
         <a className="nm-navcta" href="#contact" onClick={() => setOpen(false)}>
-          Let&rsquo;s Talk
+          Contact Us
         </a>
       </nav>
     </header>
