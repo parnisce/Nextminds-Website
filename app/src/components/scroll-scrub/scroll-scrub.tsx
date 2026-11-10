@@ -20,6 +20,10 @@ export interface ScrollScrubScene {
   tags?: string[];
   actions?: ReactNode;
   align?: "left" | "right";
+  /** 0..1. Where in this scene the route button lands (default 0.15). */
+  jumpAt?: number;
+  /** Small icon shown next to the chapter label in the route list. */
+  icon?: ReactNode;
   /** Viewport-heights assigned to this scene. More distance means slower scrub. */
   scroll?: number;
   /** 0..0.6. Slow the middle of the clip without changing either seam frame. */
@@ -479,7 +483,7 @@ export function ScrollScrub({
           continue;
         }
 
-        segment.current += (segment.target - segment.current) * 0.2;
+        segment.current += (segment.target - segment.current) * 0.14;
         const targetTime =
           clamp(segment.current, 0, 0.999) * (video.duration || 1);
         const epsilon = isMobile() ? 0.02 : 0.008;
@@ -534,7 +538,13 @@ export function ScrollScrub({
           return;
         }
         const top =
-          rootTop + segment.start + 0.15 * (segment.end - segment.start);
+          rootTop + segment.start + (scenes[index]?.jumpAt ?? 0.15) * (segment.end - segment.start);
+        const lenis = (window as { __nmLenis?: { scrollTo: (y: number, o?: object) => void } })
+          .__nmLenis;
+        if (lenis && !reduceMotion) {
+          lenis.scrollTo(top, { duration: 1.8 });
+          return;
+        }
         window.scrollTo({
           behavior: reduceMotion ? "auto" : "smooth",
           top,
@@ -642,6 +652,7 @@ export function ScrollScrub({
               onClick={() => controllerRef.current?.jumpToSection(index)}
               type="button"
             >
+              {scene.icon}
               <span>{scene.label}</span>
             </button>
           ))}
