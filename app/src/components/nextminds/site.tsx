@@ -1,8 +1,7 @@
-import { Brain, Eye, Kanban, Lightbulb, Lightning, SealCheck, ShieldCheck, Target, TrendUp, UsersThree } from "@phosphor-icons/react";
+import { Brain, EnvelopeSimple, Eye, Kanban, Lightbulb, Lightning, MapPin, PhoneCall, SealCheck, ShieldCheck, Target, TrendUp, UsersThree } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 import type { ElementType, ReactNode } from "react";
 
-import { DottedGlobe } from "./dotted-globe";
 import "./site.css";
 
 const PHONE = "(289) 690-1777";
@@ -614,51 +613,66 @@ export function Faq() {
 }
 
 export function Contact() {
+  const cards = [
+    { icon: PhoneCall, label: "Call us", value: PHONE, href: "tel:+12896901777" },
+    { icon: EnvelopeSimple, label: "Email us", value: EMAIL, href: `mailto:${EMAIL}` },
+    { icon: MapPin, label: "Visit the studio", value: `${ADDRESS}`, note: "By appointment only" },
+  ];
+
   return (
     <section className="nm-section nm-section--contact" id="contact">
-      <div className="nm-wrap">
-        <Rise className="nm-contact__panel">
-          <div className="nm-contact__main">
-            <p className="nm-label">Start a project</p>
-            <h2 className="nm-contact__title">
-              Create a new project <span>with us.</span>
-            </h2>
-            <p className="nm-contact__lede">
-              Tell us what you&rsquo;re building. We&rsquo;ll get back to you within one business day, wherever you are.
-            </p>
+      <div className="nm-cta">
+        <div aria-hidden="true" className="nm-cta__grid" />
+        <div aria-hidden="true" className="nm-cta__orb nm-cta__orb--a" />
+        <div aria-hidden="true" className="nm-cta__orb nm-cta__orb--b" />
+
+        <Rise className="nm-cta__inner">
+          <p className="nm-cta__badge">
+            <i /> Now booking new projects
+          </p>
+          <h2 className="nm-cta__title">
+            Create a new project <span>with us.</span>
+          </h2>
+          <p className="nm-cta__lede">
+            Tell us what you&rsquo;re building. We&rsquo;ll get back to you within one business day with ideas, a plan and a
+            clear next step.
+          </p>
+          <div className="nm-cta__actions">
             <a className="nm-pill" href={`mailto:${EMAIL}`}>
               Let&rsquo;s Talk
               <i>
                 <Arrow size={20} />
               </i>
             </a>
-            <dl className="nm-contact__list">
-              <div>
-                <dt>Phone</dt>
-                <dd>
-                  <a href="tel:+12896901777">{PHONE}</a>
-                </dd>
-              </div>
-              <div>
-                <dt>Email</dt>
-                <dd>
-                  <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
-                </dd>
-              </div>
-              <div>
-                <dt>Studio</dt>
-                <dd>
-                  {ADDRESS}
-                  <br />
-                  By appointment only
-                </dd>
-              </div>
-            </dl>
-          </div>
-          <div className="nm-contact__globe">
-            <DottedGlobe className="nm-contact__canvas" />
+            <a className="nm-cta__ghost" href="tel:+12896901777">
+              Call {PHONE}
+            </a>
           </div>
         </Rise>
+
+        <div className="nm-cta__cards">
+          {cards.map(({ icon: Icon, label, value, href, note }) => {
+            const body = (
+              <>
+                <span className="nm-cta__icon">
+                  <Icon aria-hidden size={24} weight="duotone" />
+                </span>
+                <span className="nm-cta__label">{label}</span>
+                <span className="nm-cta__value">{value}</span>
+                {note ? <span className="nm-cta__note">{note}</span> : null}
+              </>
+            );
+            return href ? (
+              <a className="nm-cta__card" href={href} key={label}>
+                {body}
+              </a>
+            ) : (
+              <div className="nm-cta__card" key={label}>
+                {body}
+              </div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );

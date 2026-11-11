@@ -901,52 +901,229 @@ body {
   background: var(--nm-ground);
 }
 
-.nm-contact__panel {
+.nm-cta {
   position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 0.95fr);
-  align-items: center;
-  gap: clamp(1.5rem, 4vw, 4rem);
-  padding: clamp(2rem, 5vw, 4.5rem);
+  max-width: 82rem;
+  margin: 0 auto;
+  padding: clamp(3rem, 8vw, 6.5rem) clamp(1.25rem, 5vw, 4.5rem) clamp(2rem, 4vw, 3rem);
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.09);
-  border-radius: 24px;
-  background:
-    radial-gradient(60% 80% at 85% 50%, rgba(0, 161, 214, 0.16), transparent 70%),
-    linear-gradient(160deg, rgba(19, 44, 60, 0.7), rgba(8, 20, 29, 0.95));
+  border-radius: 28px;
+  background: linear-gradient(180deg, rgba(19, 44, 60, 0.55), rgba(8, 20, 29, 0.95));
+  text-align: center;
 }
 
-.nm-contact__title {
-  margin: 1rem 0 0;
-  max-width: 13ch;
-  font-size: clamp(2.4rem, 5vw, 4.6rem);
+.nm-cta__grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0, 161, 214, 0.09) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 161, 214, 0.09) 1px, transparent 1px);
+  background-size: 3.25rem 3.25rem;
+  mask-image: radial-gradient(70% 70% at 50% 35%, #000 0%, transparent 75%);
+  -webkit-mask-image: radial-gradient(70% 70% at 50% 35%, #000 0%, transparent 75%);
+  animation: nm-cta-grid 14s linear infinite;
+}
+
+@keyframes nm-cta-grid {
+  to {
+    background-position: 0 3.25rem, 3.25rem 0;
+  }
+}
+
+.nm-cta__orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  pointer-events: none;
+}
+
+.nm-cta__orb--a {
+  top: -8rem;
+  left: 8%;
+  width: 24rem;
+  height: 24rem;
+  background: rgba(0, 161, 214, 0.28);
+  animation: nm-cta-float 11s ease-in-out infinite;
+}
+
+.nm-cta__orb--b {
+  top: -4rem;
+  right: 6%;
+  width: 20rem;
+  height: 20rem;
+  background: rgba(77, 255, 184, 0.14);
+  animation: nm-cta-float 14s ease-in-out infinite reverse;
+}
+
+@keyframes nm-cta-float {
+  50% {
+    transform: translate3d(2.5rem, 2rem, 0);
+  }
+}
+
+.nm-cta__inner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nm-cta__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0.45rem 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #cfe7f2;
+  font-family: var(--nm-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.nm-cta__badge i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #4dffb8;
+  box-shadow: 0 0 10px #4dffb8;
+  animation: nm-cta-blink 1.8s ease-in-out infinite;
+}
+
+@keyframes nm-cta-blink {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.nm-cta__title {
+  margin: 1.6rem 0 0;
+  max-width: 14ch;
+  text-wrap: balance;
+  font-size: clamp(2.6rem, 7vw, 6rem);
   font-weight: 600;
-  line-height: 1;
-  letter-spacing: -0.04em;
+  line-height: 0.98;
+  letter-spacing: -0.045em;
 }
 
-.nm-contact__title span {
+.nm-cta__title span {
   color: var(--nm-accent);
 }
 
-.nm-contact__lede {
-  max-width: 30rem;
-  margin: 1.4rem 0 0;
+.nm-cta__lede {
+  max-width: 36rem;
+  margin: 1.6rem 0 0;
   color: var(--nm-muted);
-  font-size: 1.05rem;
-  line-height: 1.65;
+  font-size: clamp(1rem, 1.3vw, 1.15rem);
+  line-height: 1.7;
 }
 
-.nm-contact__globe {
+.nm-cta__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2.25rem;
+}
+
+.nm-cta__actions .nm-pill {
+  margin-top: 0;
+}
+
+.nm-cta__ghost {
+  display: inline-flex;
+  align-items: center;
+  height: 3.75rem;
+  padding: 0 1.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--nm-r);
+  color: var(--nm-ink);
+  font-size: 1.02rem;
+  transition: border-color 0.3s, background 0.3s;
+}
+
+.nm-cta__ghost:hover {
+  border-color: var(--nm-accent);
+  background: rgba(0, 161, 214, 0.08);
+}
+
+.nm-cta__cards {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  margin-top: clamp(2.5rem, 6vw, 4.5rem);
+  text-align: left;
+}
+
+.nm-cta__card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  padding: 1.5rem 1.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 18px;
+  background: rgba(7, 18, 26, 0.6);
+  backdrop-filter: blur(6px);
+  transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+}
+
+a.nm-cta__card:hover {
+  border-color: rgba(0, 161, 214, 0.65);
+  box-shadow: 0 0 30px rgba(0, 161, 214, 0.18);
+  transform: translateY(-3px);
+}
+
+.nm-cta__icon {
   display: grid;
   place-items: center;
+  width: 3rem;
+  height: 3rem;
+  margin-bottom: 0.7rem;
+  border: 1px solid rgba(0, 161, 214, 0.4);
+  border-radius: 0.9rem;
+  background: rgba(0, 161, 214, 0.1);
+  color: var(--nm-accent);
 }
 
-.nm-contact__canvas {
-  display: block;
-  width: 100%;
-  max-width: 34rem;
-  aspect-ratio: 1;
+.nm-cta__label {
+  color: var(--nm-muted);
+  font-family: var(--nm-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.nm-cta__value {
+  color: var(--nm-ink);
+  font-size: 1.05rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.nm-cta__note {
+  color: var(--nm-muted);
+  font-size: 0.85rem;
+}
+
+@media (max-width: 62rem) {
+  .nm-cta__cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nm-cta__grid,
+  .nm-cta__orb,
+  .nm-cta__badge i {
+    animation: none;
+  }
 }
 
 .nm-pill {
@@ -976,40 +1153,6 @@ body {
 
 .nm-pill:hover i {
   transform: rotate(360deg);
-}
-
-.nm-contact__list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
-  gap: 1.5rem;
-  margin: 2.75rem 0 0;
-  padding-top: 1.75rem;
-  border-top: 1px solid var(--nm-line);
-}
-
-.nm-contact__list dt {
-  margin-bottom: 0.3rem;
-  color: var(--nm-muted);
-  font-family: var(--nm-mono);
-  font-size: 0.74rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.nm-contact__list dd {
-  margin: 0;
-  font-size: 0.98rem;
-  line-height: 1.45;
-}
-
-.nm-contact__list a:hover {
-  color: var(--nm-accent);
-}
-
-@media (max-width: 62rem) {
-  .nm-contact__panel {
-    grid-template-columns: 1fr;
-  }
 }
 
 /* ------------------------------------------------------------ footer */
