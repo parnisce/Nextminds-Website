@@ -1,16 +1,18 @@
-import { Brain, EnvelopeSimple, Eye, Kanban, Lightbulb, Lightning, MapPin, PhoneCall, SealCheck, ShieldCheck, Target, TrendUp, UsersThree } from "@phosphor-icons/react";
+import { Brain, Eye, Kanban, Lightbulb, Lightning, SealCheck, ShieldCheck, Target, TrendUp, UsersThree } from "@phosphor-icons/react";
+import { Link, useLocation } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import type { ElementType, ReactNode } from "react";
 
 import "./site.css";
 
-const PHONE = "(289) 690-1777";
-const EMAIL = "info@nextminds.com";
-const ADDRESS = "27 Bounty Avenue, Thorold, ON L2V 0H3, Canada";
+export const PHONE = "(289) 690-1777";
+export const EMAIL = "info@nextminds.com";
+export const ADDRESS = "27 Bounty Avenue, Thorold, ON L2V 0H3, Canada";
 
-const services = [
+export const services = [
   {
     name: "AI Agent Development",
+    slug: "ai-agents-development",
     short: "AI Agent",
     category: "AI & Automation",
     image: "/assets/services/ai.jpg",
@@ -21,6 +23,7 @@ const services = [
   },
   {
     name: "Web Digital Agency",
+    slug: "digital-agency",
     short: "Web Digital",
     category: "Web & Digital",
     image: "/assets/services/web.jpg",
@@ -31,6 +34,7 @@ const services = [
   },
   {
     name: "Real Estate Services",
+    slug: "real-estate-media",
     short: "Real Estate",
     category: "Real Estate Media",
     image: "/assets/services/real-estate.jpg",
@@ -41,6 +45,7 @@ const services = [
   },
   {
     name: "Media Production",
+    slug: "media-production",
     short: "Media",
     category: "Video Production",
     image: "/assets/services/media.jpg",
@@ -127,7 +132,7 @@ const clients = [
   },
 ];
 
-function Arrow({ size = 18 }: { size?: number }) {
+export function Arrow({ size = 18 }: { size?: number }) {
   return (
     <svg
       aria-hidden="true"
@@ -146,7 +151,7 @@ function Arrow({ size = 18 }: { size?: number }) {
 }
 
 /** Settles content into place with a transform only, so it is never invisible. */
-function Rise({
+export function Rise({
   as: Tag = "div",
   children,
   className = "",
@@ -201,12 +206,20 @@ const navLinks = [
 
 export function Nav() {
   const [open, setOpen] = useState(false);
+  const onHome = useLocation({ select: (l) => l.pathname === "/" });
+  const close = () => setOpen(false);
 
   return (
     <header className="nm-nav">
-      <a aria-label="NextMinds home" className="nm-nav__logo" href="#">
-        <img alt="NextMinds" height={46} src="/assets/brand/logo.png" width={177} />
-      </a>
+      {onHome ? (
+        <a aria-label="NextMinds home" className="nm-nav__logo" href="#">
+          <img alt="NextMinds" height={46} src="/assets/brand/logo.png" width={177} />
+        </a>
+      ) : (
+        <Link aria-label="NextMinds home" className="nm-nav__logo" to="/">
+          <img alt="NextMinds" height={46} src="/assets/brand/logo.png" width={177} />
+        </Link>
+      )}
       <button
         aria-controls="nm-links"
         aria-expanded={open}
@@ -218,14 +231,20 @@ export function Nav() {
         {open ? "✕" : "☰"}
       </button>
       <nav className={`nm-nav__links ${open ? "is-open" : ""}`} id="nm-links">
-        {navLinks.map(([label, href]) => (
-          <a href={href} key={href} onClick={() => setOpen(false)}>
-            {label}
-          </a>
-        ))}
-        <a className="nm-navcta" href="#contact" onClick={() => setOpen(false)}>
+        {navLinks.map(([label, href]) =>
+          onHome ? (
+            <a href={href} key={href} onClick={close}>
+              {label}
+            </a>
+          ) : (
+            <a href={href === "#" ? "/" : `/${href}`} key={href} onClick={close}>
+              {label}
+            </a>
+          ),
+        )}
+        <Link className="nm-navcta" onClick={close} to="/contact">
           Contact Us
-        </a>
+        </Link>
       </nav>
     </header>
   );
@@ -234,12 +253,12 @@ export function Nav() {
 export function HeroActions() {
   return (
     <>
-      <a className="nm-heroA" href="#contact">
+      <Link className="nm-heroA" to="/contact">
         <span className="nm-heroA__l">
           <span>Let&rsquo;s Talk</span>
           <span aria-hidden="true">Let&rsquo;s Talk</span>
         </span>
-      </a>
+      </Link>
       <a className="nm-heroB" href="#services">
         Our Services <Arrow />
       </a>
@@ -359,12 +378,12 @@ export function Services() {
                   ))}
                 </ul>
                 <div className="nm-work__actions">
-                  <a className="nm-work__btn nm-work__btn--solid" href="#contact">
+                  <Link className="nm-work__btn nm-work__btn--solid" params={{ slug: s.slug }} to="/services/$slug">
                     Explore {s.short} <Arrow size={16} />
-                  </a>
-                  <a className="nm-work__btn nm-work__btn--ghost" href="#contact">
+                  </Link>
+                  <Link className="nm-work__btn nm-work__btn--ghost" to="/contact">
                     Start a project
-                  </a>
+                  </Link>
                 </div>
               </article>
             ))}
@@ -613,12 +632,6 @@ export function Faq() {
 }
 
 export function Contact() {
-  const cards = [
-    { icon: PhoneCall, label: "Call us", value: PHONE, href: "tel:+12896901777" },
-    { icon: EnvelopeSimple, label: "Email us", value: EMAIL, href: `mailto:${EMAIL}` },
-    { icon: MapPin, label: "Visit the studio", value: `${ADDRESS}`, note: "By appointment only" },
-  ];
-
   return (
     <section className="nm-section nm-section--contact" id="contact">
       <div className="nm-cta">
@@ -638,41 +651,17 @@ export function Contact() {
             clear next step.
           </p>
           <div className="nm-cta__actions">
-            <a className="nm-pill" href={`mailto:${EMAIL}`}>
+            <Link className="nm-pill" to="/contact">
               Let&rsquo;s Talk
               <i>
                 <Arrow size={20} />
               </i>
-            </a>
+            </Link>
             <a className="nm-cta__ghost" href="tel:+12896901777">
               Call {PHONE}
             </a>
           </div>
         </Rise>
-
-        <div className="nm-cta__cards">
-          {cards.map(({ icon: Icon, label, value, href, note }) => {
-            const body = (
-              <>
-                <span className="nm-cta__icon">
-                  <Icon aria-hidden size={24} weight="duotone" />
-                </span>
-                <span className="nm-cta__label">{label}</span>
-                <span className="nm-cta__value">{value}</span>
-                {note ? <span className="nm-cta__note">{note}</span> : null}
-              </>
-            );
-            return href ? (
-              <a className="nm-cta__card" href={href} key={label}>
-                {body}
-              </a>
-            ) : (
-              <div className="nm-cta__card" key={label}>
-                {body}
-              </div>
-            );
-          })}
-        </div>
       </div>
     </section>
   );
@@ -694,16 +683,24 @@ export function Footer() {
             <h4>B2B services</h4>
             <ul>
               <li>
-                <a href="https://nextminds.com/digital-agency/">Digital Agency</a>
+                <Link params={{ slug: "digital-agency" }} to="/services/$slug">
+                  Digital Agency
+                </Link>
               </li>
               <li>
-                <a href="https://nextminds.com/real-estate-media/">Real Estate Services</a>
+                <Link params={{ slug: "real-estate-media" }} to="/services/$slug">
+                  Real Estate Services
+                </Link>
               </li>
               <li>
-                <a href="https://nextminds.com/ai-agents-development/">AI Development Services</a>
+                <Link params={{ slug: "ai-agents-development" }} to="/services/$slug">
+                  AI Development Services
+                </Link>
               </li>
               <li>
-                <a href="https://nextminds.com/media-production/">Media Production</a>
+                <Link params={{ slug: "media-production" }} to="/services/$slug">
+                  Media Production
+                </Link>
               </li>
             </ul>
           </div>
@@ -726,6 +723,9 @@ export function Footer() {
                 <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
               </li>
               <li>{ADDRESS}</li>
+              <li>
+                <Link to="/contact">Contact page</Link>
+              </li>
             </ul>
           </div>
         </div>
