@@ -470,7 +470,7 @@ export function ScrollScrub({
       root.style.setProperty("--ss-progress", String(clamp(y / total)));
     };
 
-    const updateVideos = () => {
+    const updateVideos = (follow: number) => {
       for (const segment of runtime) {
         const { video } = segment;
         if (!video || !segment.ready || video.seeking) {
@@ -483,7 +483,7 @@ export function ScrollScrub({
           continue;
         }
 
-        segment.current += (segment.target - segment.current) * 0.14;
+        segment.current += (segment.target - segment.current) * follow;
         const targetTime =
           clamp(segment.current, 0, 0.999) * (video.duration || 1);
         const epsilon = isMobile() ? 0.02 : 0.008;
@@ -497,15 +497,20 @@ export function ScrollScrub({
       }
     };
 
-    const tick = () => {
+    let lastTick = 0;
+    const tick = (now = performance.now()) => {
       if (destroyed) {
         return;
       }
+      // Frame-rate independent easing so the film glides identically on 60/120Hz.
+      const dt = lastTick ? Math.min((now - lastTick) / 1000, 0.1) : 1 / 60;
+      lastTick = now;
+      const follow = 1 - Math.pow(1 - 0.085, dt * 60);
       if (dirty) {
         dirty = false;
         readScroll();
       }
-      updateVideos();
+      updateVideos(follow);
       frame = window.requestAnimationFrame(tick);
     };
 

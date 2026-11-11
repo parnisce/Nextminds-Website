@@ -11,6 +11,7 @@ const ADDRESS = "27 Bounty Avenue, Thorold, ON L2V 0H3, Canada";
 const services = [
   {
     name: "AI Agent Development",
+    short: "AI Agent",
     category: "AI & Automation",
     image: "/assets/services/ai.jpg",
     href: "https://nextminds.com/ai-agents-development/",
@@ -20,6 +21,7 @@ const services = [
   },
   {
     name: "Web Digital Agency",
+    short: "Web Digital",
     category: "Web & Digital",
     image: "/assets/services/web.jpg",
     href: "https://nextminds.com/digital-agency/",
@@ -29,6 +31,7 @@ const services = [
   },
   {
     name: "Real Estate Services",
+    short: "Real Estate",
     category: "Real Estate Media",
     image: "/assets/services/real-estate.jpg",
     href: "https://nextminds.com/real-estate-media/",
@@ -38,6 +41,7 @@ const services = [
   },
   {
     name: "Media Production",
+    short: "Media",
     category: "Video Production",
     image: "/assets/services/media.jpg",
     href: "https://nextminds.com/media-production/",
@@ -228,50 +232,149 @@ export function HeroActions() {
 }
 
 export function Services() {
-  const [active, setActive] = useState(0);
+  const track = useRef<HTMLDivElement>(null);
+  const texts = useRef<(HTMLElement | null)[]>([]);
+  const layers = useRef<(HTMLElement | null)[]>([]);
+  const bars = useRef<(HTMLElement | null)[]>([]);
+  const counter = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    const el = track.current;
+    if (!el) return;
+    const n = services.length;
+    const per = 0.9;
+    const clamp = (v: number, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+    const mq = window.matchMedia("(max-width: 1024px)");
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const pad = (v: number) => String(v).padStart(2, "0");
+
+    let current = 0;
+    let raf = 0;
+
+    const reset = () => {
+      [...texts.current, ...layers.current].forEach((node) => {
+        if (!node) return;
+        node.style.opacity = "";
+        node.style.transform = "";
+        node.style.pointerEvents = "";
+        node.style.zIndex = "";
+      });
+    };
+
+    const paint = (f: number) => {
+      services.forEach((_, i) => {
+        const d = i - f;
+        const t = texts.current[i];
+        const l = layers.current[i];
+        if (!t || !l) return;
+        const o = 1 - clamp(Math.abs(d) * 1.7);
+        t.style.opacity = String(o);
+        t.style.transform = `translate3d(0, ${d * 46}px, 0)`;
+        t.style.pointerEvents = o > 0.6 ? "auto" : "none";
+        l.style.opacity = String(1 - clamp(Math.abs(d) * 1.35));
+        l.style.transform = `translate3d(0, ${d * 9}%, 0) scale(${1 - Math.min(Math.abs(d), 1) * 0.06})`;
+        l.style.zIndex = d > 0 ? "1" : "2";
+        const b = bars.current[i];
+        if (b) b.style.transform = `scaleX(${clamp(f - i + 1)})`;
+      });
+      if (counter.current) counter.current.textContent = `${pad(Math.round(f) + 1)} / ${pad(n)}`;
+    };
+
+    const target = () => {
+      const span = (n - 1) * per * window.innerHeight;
+      return clamp(-el.getBoundingClientRect().top / span) * (n - 1);
+    };
+
+    // Eased follow loop: glides toward the scroll position so the pinned
+    // transitions feel fluid rather than stepping with the wheel.
+    const tick = () => {
+      if (mq.matches || reduced) {
+        reset();
+        raf = 0;
+        return;
+      }
+      const goal = target();
+      current += (goal - current) * 0.12;
+      if (Math.abs(goal - current) < 0.0005) current = goal;
+      paint(current);
+      raf = requestAnimationFrame(tick);
+    };
+
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          if (!raf) {
+            current = target();
+            raf = requestAnimationFrame(tick);
+          }
+        } else if (raf) {
+          cancelAnimationFrame(raf);
+          raf = 0;
+        }
+      },
+      { rootMargin: "100% 0px 100% 0px" },
+    );
+    io.observe(el);
+    paint(0);
+
+    return () => {
+      io.disconnect();
+      cancelAnimationFrame(raf);
+    };
+  }, []);
 
   return (
-    <section className="nm-section" id="services">
-      <div className="nm-wrap">
-        <Rise>
-          <p className="nm-label">The work. The real-world impact.</p>
-          <h2 className="nm-h2">Four disciplines. One team.</h2>
-        </Rise>
-
-        <div className="nm-services__grid">
-          <Rise className="nm-services__list">
+    <section className="nm-work" id="services">
+      <div aria-hidden="true" className="nm-work__glow" />
+      <div className="nm-work__track" ref={track} style={{ "--n": services.length, "--per": 0.9 } as React.CSSProperties}>
+        <div className="nm-work__stage">
+          <div className="nm-work__texts">
             {services.map((s, i) => (
-              <div
-                className={`nm-row ${active === i ? "is-active" : ""}`}
-                key={s.name}
-                onFocus={() => setActive(i)}
-                onMouseEnter={() => setActive(i)}
-              >
-                <span className="nm-row__meta">
-                  0{i + 1} / {s.category}
+              <article className="nm-work__text" key={s.name} ref={(node) => { texts.current[i] = node; }}>
+                <span className="nm-work__meta">
+                  <i /> 0{i + 1} / {s.category}
                 </span>
-                <h3 className="nm-row__name">{s.name}</h3>
-                <a aria-label={`View more about ${s.name}`} className="nm-row__go" href={s.href}>
-                  <Arrow size={20} />
-                </a>
-                <p className="nm-row__lead">{s.lead}</p>
-                <p className="nm-row__desc">{s.text}</p>
-                <ul className="nm-chips">
+                <h3 className="nm-work__name">{s.name}</h3>
+                <p className="nm-work__lead">{s.lead}</p>
+                <p className="nm-work__desc">{s.text}</p>
+                <ul className="nm-work__chips">
                   {s.features.map((f) => (
                     <li key={f}>{f}</li>
                   ))}
                 </ul>
-                <img alt="" className="nm-row__thumb" loading="lazy" src={s.image} />
-              </div>
-            ))}
-          </Rise>
-
-          <div aria-hidden="true" className="nm-services__preview">
-            {services.map((s, i) => (
-              <img alt="" className={active === i ? "is-active" : ""} key={s.image} src={s.image} />
+                <div className="nm-work__actions">
+                  <a className="nm-work__btn nm-work__btn--solid" href="#contact">
+                    Explore {s.short} <Arrow size={16} />
+                  </a>
+                  <a className="nm-work__btn nm-work__btn--ghost" href="#contact">
+                    Start a project
+                  </a>
+                </div>
+              </article>
             ))}
           </div>
+
+          <div className="nm-work__right">
+            <div aria-hidden="true" className="nm-work__media">
+              {services.map((s, i) => (
+                <div className="nm-work__layer" key={s.image} ref={(node) => { layers.current[i] = node; }}>
+                  <img alt="" draggable={false} src={s.image} />
+                </div>
+              ))}
+            </div>
+            <div className="nm-work__nav">
+              <span ref={counter}>01 / 0{services.length}</span>
+              <div className="nm-work__bars">
+                {services.map((s, i) => (
+                  <span key={s.name}>
+                    <b ref={(node) => { bars.current[i] = node; }} />
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
+        <div className="nm-work__spacer" />
       </div>
     </section>
   );
