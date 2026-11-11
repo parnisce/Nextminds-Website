@@ -1372,29 +1372,88 @@ body {
 }
 
 /* ---- Testimonials: quote cards ---- */
+.nm-section--clients {
+  padding-right: 0;
+  padding-left: 0;
+  background: var(--nm-ground);
+  overflow: hidden;
+}
+
+.nm-section--clients > .nm-wrap {
+  padding: 0 var(--nm-pad);
+}
+
 .nm-quotes {
+  position: relative;
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 1.1rem;
   margin-top: clamp(2.5rem, 5vw, 4rem);
+}
+
+.nm-quotes__fade {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 18%;
+  pointer-events: none;
+}
+
+.nm-quotes__fade--l {
+  left: 0;
+  background: linear-gradient(90deg, var(--nm-ground), transparent);
+}
+
+.nm-quotes__fade--r {
+  right: 0;
+  background: linear-gradient(270deg, var(--nm-ground), transparent);
+}
+
+.nm-marquee {
+  display: flex;
+  gap: 1.1rem;
+  width: max-content;
+  animation: nm-marquee 110s linear infinite;
+}
+
+.nm-marquee.is-reverse {
+  animation-direction: reverse;
+}
+
+.nm-quotes:hover .nm-marquee {
+  animation-play-state: paused;
+}
+
+.nm-marquee__group {
+  display: flex;
+  flex: none;
+  gap: 1.1rem;
+}
+
+@keyframes nm-marquee {
+  to {
+    transform: translateX(calc(-25% - 0.275rem));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nm-marquee {
+    animation: none;
+  }
 }
 
 .nm-qcard {
   position: relative;
   display: flex;
+  flex: none;
   flex-direction: column;
   justify-content: space-between;
   gap: 1.75rem;
-  grid-column: span 2;
+  width: clamp(18rem, 30vw, 25rem);
   margin: 0;
   padding: 2.1rem 1.9rem 1.75rem;
   border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: 18px;
   background: linear-gradient(160deg, rgba(19, 44, 60, 0.7), rgba(8, 20, 29, 0.9));
-}
-
-.nm-qcard:nth-child(n + 4) {
-  grid-column: span 3;
 }
 
 .nm-qcard__mark {
@@ -1555,19 +1614,10 @@ body {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .nm-quotes {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .nm-qcard,
-  .nm-qcard:nth-child(n + 4) {
-    grid-column: span 1;
-  }
 }
 
 @media (max-width: 40rem) {
-  .nm-why__grid,
-  .nm-quotes {
+  .nm-why__grid {
     grid-template-columns: 1fr;
   }
 

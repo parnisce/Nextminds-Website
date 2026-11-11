@@ -525,9 +525,44 @@ export function Why() {
   );
 }
 
-export function Clients() {
+function QuoteCard({ quote, name, role }: (typeof clients)[number]) {
   return (
-    <section className="nm-section nm-section--deep" id="clients">
+    <figure className="nm-qcard">
+      <span aria-hidden="true" className="nm-qcard__mark">
+        &ldquo;
+      </span>
+      <blockquote>{quote}</blockquote>
+      <figcaption>
+        <span className="nm-qcard__avatar">{name[0]}</span>
+        <span>
+          <b>{name}</b>
+          <small>{role}</small>
+        </span>
+      </figcaption>
+    </figure>
+  );
+}
+
+function QuoteRow({ items, reverse = false }: { items: typeof clients; reverse?: boolean }) {
+  return (
+    <div className={`nm-marquee ${reverse ? "is-reverse" : ""}`}>
+      {[0, 1, 2, 3].map((copy) => (
+        <div aria-hidden={copy > 0} className="nm-marquee__group" key={copy}>
+          {items.map((c) => (
+            <QuoteCard key={c.name} {...c} />
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export function Clients() {
+  const firstRow = clients;
+  const secondRow = [...clients.slice(3), ...clients.slice(0, 3)];
+
+  return (
+    <section className="nm-section nm-section--clients" id="clients">
       <div className="nm-wrap">
         <Rise>
           <p className="nm-label">Testimonials</p>
@@ -535,23 +570,12 @@ export function Clients() {
             Trusted by the people <span className="nm-accent">we work with.</span>
           </h2>
         </Rise>
-        <div className="nm-quotes">
-          {clients.map((c, i) => (
-            <Rise as="figure" className="nm-qcard" delay={(i % 3) * 100} key={c.name}>
-              <span aria-hidden="true" className="nm-qcard__mark">
-                &ldquo;
-              </span>
-              <blockquote>{c.quote}</blockquote>
-              <figcaption>
-                <span className="nm-qcard__avatar">{c.name[0]}</span>
-                <span>
-                  <b>{c.name}</b>
-                  <small>{c.role}</small>
-                </span>
-              </figcaption>
-            </Rise>
-          ))}
-        </div>
+      </div>
+      <div className="nm-quotes">
+        <QuoteRow items={firstRow} />
+        <QuoteRow items={secondRow} reverse />
+        <div aria-hidden="true" className="nm-quotes__fade nm-quotes__fade--l" />
+        <div aria-hidden="true" className="nm-quotes__fade nm-quotes__fade--r" />
       </div>
     </section>
   );
