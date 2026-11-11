@@ -132,9 +132,15 @@
   position: relative;
 }
 
+/* Hero copy stays fixed on screen while the film scrubs: each chapter clips its
+   own viewport-fixed text, so scrolling only reveals the next chapter in place. */
+.scroll-scrub__chapter {
+  clip-path: inset(0);
+}
+
 .scroll-scrub__chapter-pin {
-  position: sticky;
-  top: 0;
+  position: fixed;
+  inset: 0;
   display: flex;
   align-items: center;
   min-height: 100dvh;
