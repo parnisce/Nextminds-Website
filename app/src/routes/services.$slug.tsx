@@ -1,20 +1,14 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 
-import { ServicePage } from "@/components/nextminds/pages";
-import { services } from "@/components/nextminds/site";
+import { ServicePage, serviceHead } from "@/components/nextminds/pages";
+import { allServices } from "@/components/nextminds/site";
 
 export const Route = createFileRoute("/services/$slug")({
   loader: ({ params }) => {
-    const service = services.find((s) => s.slug === params.slug);
-    if (!service) throw notFound();
-    return { name: service.name, lead: service.lead };
+    if (!allServices.some((s) => s.slug === params.slug)) throw notFound();
+    return { slug: params.slug };
   },
-  head: ({ loaderData }) => ({
-    meta: [
-      { title: `${loaderData?.name ?? "Services"} | NextMinds` },
-      { name: "description", content: loaderData?.lead ?? "NextMinds services." },
-    ],
-  }),
+  head: ({ params }) => serviceHead(params.slug),
   component: ServiceRoute,
 });
 

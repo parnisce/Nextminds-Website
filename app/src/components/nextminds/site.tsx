@@ -56,6 +56,52 @@ export const services = [
   },
 ];
 
+export const b2cServices = [
+  {
+    name: "Online Education",
+    short: "Online Education",
+    slug: "online-education",
+    category: "Education",
+    image: "/assets/services/online-education.jpg",
+    lead: "Online courses and learning programs that people finish.",
+    text: "We help educators, coaches and businesses turn their expertise into engaging online programs, from course structure and recorded lessons to the pages and tools that deliver them.",
+    features: ["Course design", "Lesson video production", "Student portals", "Live & recorded classes"],
+  },
+  {
+    name: "Photo and Video Portraiture",
+    short: "Portraiture",
+    slug: "photo-video-portraiture",
+    category: "Portraiture",
+    image: "/assets/services/portraiture.jpg",
+    lead: "Portraits that look like you at your best.",
+    text: "Professional photo and video portraits for individuals, teams and brands, from headshots to personal brand films, lit, directed and retouched with care.",
+    features: ["Headshots", "Personal brand video", "Team & corporate portraits", "Retouching"],
+  },
+  {
+    name: "E-Learning Platforms",
+    short: "E-Learning",
+    slug: "e-learning-platforms",
+    category: "E-Learning",
+    image: "/assets/services/e-learning.jpg",
+    lead: "Learning platforms built around your content.",
+    text: "Custom e-learning sites and platforms with course delivery, progress tracking and secure student access, designed so learners can focus on learning.",
+    features: ["Course delivery", "Progress tracking", "Memberships & access", "Quizzes & certificates"],
+  },
+  {
+    name: "E-Commerce Services",
+    short: "E-Commerce",
+    slug: "e-commerce-services",
+    category: "E-Commerce",
+    image: "/assets/services/e-commerce.jpg",
+    lead: "Online stores that make it easy to buy.",
+    text: "Design, build and launch of online stores, from product pages and checkout to payments, shipping and the marketing that brings customers in.",
+    features: ["Store design & build", "Payments & shipping", "Product photography", "Marketing & SEO"],
+  },
+];
+
+export type ServiceItem = (typeof services)[number] | (typeof b2cServices)[number];
+export const allServices: ServiceItem[] = [...services, ...b2cServices];
+
 const values = [
   {
     icon: Lightbulb,
@@ -707,10 +753,13 @@ export function Footer() {
           <div>
             <h4>B2C services</h4>
             <ul>
-              <li>Online Education</li>
-              <li>Photo and Video Portraiture</li>
-              <li>E-Learning Platforms</li>
-              <li>E-Commerce Services</li>
+              {b2cServices.map((item) => (
+                <li key={item.slug}>
+                  <Link params={{ slug: item.slug }} to="/services/$slug">
+                    {item.name}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
           <div>

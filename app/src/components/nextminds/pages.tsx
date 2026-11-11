@@ -1,5 +1,18 @@
 import {
   Armchair,
+  BookOpenText,
+  Certificate,
+  ChalkboardTeacher,
+  ChartLineUp,
+  CreditCard,
+  LockKey,
+  MagicWand,
+  MonitorPlay,
+  Storefront,
+  UserCircle,
+  UserFocus,
+  UsersThree,
+  VideoCamera,
   Brain,
   Camera,
   ChatsCircle,
@@ -24,8 +37,9 @@ import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import type { FormEvent, ReactNode } from "react";
 
-import { ADDRESS, Arrow, EMAIL, Footer, Nav, PHONE, Rise, services } from "./site";
+import { ADDRESS, Arrow, EMAIL, Footer, Nav, PHONE, Rise, allServices, b2cServices, services } from "./site";
 import { SmoothScroll } from "./smooth-scroll";
+import { SITE_URL, abs, breadcrumbs, organization, pageHead } from "../../lib/seo";
 import "./site.css";
 
 export function PageShell({ children }: { children: ReactNode }) {
@@ -61,6 +75,42 @@ const details: Record<string, Detail> = {
     ],
     steps: defaultSteps("Build & train"),
   },
+  "online-education": {
+    included: [
+      { icon: BookOpenText, title: "Course design", text: "Clear learning paths, modules and lesson plans that take people from beginner to confident." },
+      { icon: VideoCamera, title: "Lesson video production", text: "Well-lit, well-sounding recorded lessons that keep learners watching." },
+      { icon: UserCircle, title: "Student portals", text: "A simple home for each student to find lessons, resources and their progress." },
+      { icon: ChalkboardTeacher, title: "Live & recorded classes", text: "Set up for live sessions and replays, so learners can join in or catch up later." },
+    ],
+    steps: defaultSteps("Build & record"),
+  },
+  "photo-video-portraiture": {
+    included: [
+      { icon: UserFocus, title: "Headshots", text: "Clean, confident headshots for profiles, websites and press, in studio or on location." },
+      { icon: VideoCamera, title: "Personal brand video", text: "Short films that let people hear your story and see how you work." },
+      { icon: UsersThree, title: "Team & corporate portraits", text: "Consistent portraits for whole teams, so your About page looks cohesive." },
+      { icon: MagicWand, title: "Retouching", text: "Natural, careful editing that keeps you looking like yourself." },
+    ],
+    steps: defaultSteps("Shoot & retouch"),
+  },
+  "e-learning-platforms": {
+    included: [
+      { icon: MonitorPlay, title: "Course delivery", text: "Video, reading and downloads organised into lessons that are easy to follow." },
+      { icon: ChartLineUp, title: "Progress tracking", text: "Learners and instructors can see what is finished and what comes next." },
+      { icon: LockKey, title: "Memberships & access", text: "Secure sign-in with the right access for each course, group or subscription." },
+      { icon: Certificate, title: "Quizzes & certificates", text: "Check understanding along the way and reward completion." },
+    ],
+    steps: defaultSteps("Design & build"),
+  },
+  "e-commerce-services": {
+    included: [
+      { icon: Storefront, title: "Store design & build", text: "A store that reflects your brand and makes products easy to browse." },
+      { icon: CreditCard, title: "Payments & shipping", text: "Checkout, payment providers and shipping options set up to suit your business." },
+      { icon: Camera, title: "Product photography", text: "Consistent, appealing product images that help customers decide." },
+      { icon: MagnifyingGlass, title: "Marketing & SEO", text: "Search-friendly product pages and campaigns that bring in the right visitors." },
+    ],
+    steps: defaultSteps("Build & launch"),
+  },
   "digital-agency": {
     included: [
       { icon: PaintBrush, title: "Custom web design", text: "Brand-led interfaces designed around your customers and the action you want them to take." },
@@ -90,12 +140,112 @@ const details: Record<string, Detail> = {
   },
 };
 
+export const serviceSeo: Record<string, { title: string; description: string }> = {
+  "digital-agency": {
+    title: "Web Design & Development Agency | NextMinds",
+    description:
+      "Custom web design, React and Next.js development, SEO and e-commerce from one team. Fast, conversion-focused websites built end to end by NextMinds.",
+  },
+  "real-estate-media": {
+    title: "Real Estate Photography & Video Tours | NextMinds",
+    description:
+      "HDR photography, video and drone tours, virtual staging and listing websites that help properties stand out and sell faster.",
+  },
+  "ai-agents-development": {
+    title: "AI Agent Development Services | NextMinds",
+    description:
+      "Custom AI agents for support, sales and operations: autonomous workflows, chat and voice agents, CRM and API integrations, and custom LLM training.",
+  },
+  "media-production": {
+    title: "Video Production & Content Creation | NextMinds",
+    description:
+      "Cinematic brand films, social content, motion graphics and post-production, from concept to final cut, produced in-house by NextMinds.",
+  },
+  "online-education": {
+    title: "Online Education Course Creation | NextMinds",
+    description:
+      "Turn your expertise into online courses: course design, lesson video production, student portals and live or recorded classes.",
+  },
+  "photo-video-portraiture": {
+    title: "Photo & Video Portraiture Services | NextMinds",
+    description:
+      "Professional headshots, personal brand video, team portraits and careful retouching for individuals, teams and brands.",
+  },
+  "e-learning-platforms": {
+    title: "Custom E-Learning Platform Development | NextMinds",
+    description:
+      "Custom e-learning platforms with course delivery, progress tracking, secure memberships, quizzes and certificates.",
+  },
+  "e-commerce-services": {
+    title: "E-Commerce Website & Store Services | NextMinds",
+    description:
+      "Online store design and build, payments and shipping, product photography and SEO to help customers find and buy from you.",
+  },
+};
+
+export function serviceHead(slug: string) {
+  const item = allServices.find((s) => s.slug === slug);
+  const text = serviceSeo[slug];
+  if (!item || !text) return {};
+  const path = `/services/${slug}`;
+  return pageHead({
+    title: text.title,
+    description: text.description,
+    path,
+    image: item.image,
+    imageAlt: item.name,
+    jsonLd: [
+      {
+        "@type": "Service",
+        "@id": `${SITE_URL}${path}#service`,
+        name: item.name,
+        serviceType: item.category,
+        description: text.description,
+        url: abs(path),
+        image: abs(item.image),
+        provider: { "@id": `${SITE_URL}/#organization` },
+        areaServed: "CA",
+      },
+      organization,
+      breadcrumbs([
+        { name: "Home", path: "/" },
+        { name: "Services", path: "/#services" },
+        { name: item.name, path },
+      ]),
+    ],
+  });
+}
+
+export const contactHead = () =>
+  pageHead({
+    title: "Contact NextMinds | Start Your Project",
+    description:
+      "Contact NextMinds in Thorold, Ontario. Call (289) 690-1777, email info@nextminds.com or send a message about your web, AI, media or e-commerce project.",
+    path: "/contact",
+    jsonLd: [
+      {
+        "@type": "ContactPage",
+        "@id": `${SITE_URL}/contact#page`,
+        name: "Contact NextMinds",
+        url: abs("/contact"),
+        about: { "@id": `${SITE_URL}/#organization` },
+      },
+      organization,
+      breadcrumbs([
+        { name: "Home", path: "/" },
+        { name: "Contact Us", path: "/contact" },
+      ]),
+    ],
+  });
+
 export function ServicePage({ slug }: { slug: string }) {
-  const index = services.findIndex((s) => s.slug === slug);
-  const service = services[index];
+  const group = b2cServices.some((s) => s.slug === slug) ? b2cServices : services;
+  const isB2c = group === b2cServices;
+  const index = group.findIndex((s) => s.slug === slug);
+  const service = group[index];
   const detail = details[slug];
   if (!service || !detail) return null;
-  const others = services.filter((s) => s.slug !== slug);
+  const others = group.filter((s) => s.slug !== slug);
 
   return (
     <PageShell>
@@ -106,7 +256,7 @@ export function ServicePage({ slug }: { slug: string }) {
             <nav aria-label="Breadcrumb" className="nm-crumbs">
               <Link to="/">Home</Link>
               <span>/</span>
-              <a href="/#services">Services</a>
+              {isB2c ? <span>B2C services</span> : <a href="/#services">Services</a>}
               <span>/</span>
               <b>{service.name}</b>
             </nav>
@@ -126,7 +276,7 @@ export function ServicePage({ slug }: { slug: string }) {
             </div>
           </div>
           <div className="nm-sp-hero__media">
-            <img alt={service.name} src={service.image} />
+            <img alt={`${service.name} by NextMinds`} decoding="async" fetchPriority="high" height={1200} src={service.image} width={1600} />
           </div>
         </div>
       </section>
@@ -186,7 +336,7 @@ export function ServicePage({ slug }: { slug: string }) {
           <div className="nm-sp-others">
             {others.map((o) => (
               <Link className="nm-sp-other" key={o.slug} params={{ slug: o.slug }} to="/services/$slug">
-                <img alt="" loading="lazy" src={o.image} />
+                <img alt={`${o.name} by NextMinds`} height={1200} loading="lazy" src={o.image} width={1600} />
                 <span className="nm-sp-other__body">
                   <small>{o.category}</small>
                   <b>{o.name}</b>
@@ -326,7 +476,7 @@ export function ContactPage() {
                 <span>I&rsquo;m interested in</span>
                 <select defaultValue="" name="service">
                   <option value="">Select a service</option>
-                  {services.map((s) => (
+                  {allServices.map((s) => (
                     <option key={s.slug} value={s.name}>
                       {s.name}
                     </option>

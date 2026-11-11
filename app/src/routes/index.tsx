@@ -12,11 +12,29 @@ import {
   Services,
   Why,
 } from "@/components/nextminds/site";
+import { SITE_URL, organization, pageHead } from "@/lib/seo";
 import { SmoothScroll } from "@/components/nextminds/smooth-scroll";
 import { ScrollScrub } from "@/components/scroll-scrub/scroll-scrub";
 import { scrollScrubScenes, scrollScrubTheme } from "@/scroll-scrub-scenes";
 
 export const Route = createFileRoute("/")({
+  head: () =>
+    pageHead({
+      title: "NextMinds | AI Agents, Web Design, Real Estate Media & Video",
+      description:
+        "NextMinds Business Solutions in Ontario, Canada: AI agent development, web design, real estate media and video production from one team.",
+      path: "/",
+      jsonLd: [
+        organization,
+        {
+          "@type": "WebSite",
+          "@id": `${SITE_URL}/#website`,
+          url: SITE_URL,
+          name: "NextMinds",
+          publisher: { "@id": `${SITE_URL}/#organization` },
+        },
+      ],
+    }),
   component: Index,
 });
 

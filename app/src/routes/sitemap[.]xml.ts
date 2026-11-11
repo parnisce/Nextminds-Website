@@ -1,12 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+import { SITE_URL, serviceSlugs } from "../lib/seo";
+
 export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
-      GET: async ({ request }) => {
-        const origin = new URL(request.url).origin;
+      GET: async () => {
+        const origin = SITE_URL;
         const today = new Date().toISOString().split("T")[0];
-        const paths = ["/", "/contact", "/services/digital-agency", "/services/real-estate-media", "/services/ai-agents-development", "/services/media-production"];
+        const paths = ["/", "/contact", ...serviceSlugs.map((slug) => `/services/${slug}`)];
         const urls = paths.flatMap((path) => [
           "  <url>",
           `    <loc>${origin}${path}</loc>`,

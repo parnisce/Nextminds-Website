@@ -905,7 +905,7 @@ body {
   position: relative;
   max-width: 82rem;
   margin: 0 auto;
-  padding: clamp(3rem, 8vw, 6.5rem) clamp(1.25rem, 5vw, 4.5rem) clamp(2rem, 4vw, 3rem);
+  padding: clamp(2rem, 6vw, 6rem);
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.09);
   border-radius: 28px;
