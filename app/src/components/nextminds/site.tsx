@@ -1,4 +1,4 @@
-import { Brain, Eye, Lightning, Target, TrendUp, UsersThree } from "@phosphor-icons/react";
+import { Brain, Eye, Kanban, Lightbulb, Lightning, SealCheck, ShieldCheck, Target, TrendUp, UsersThree } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 import type { ElementType, ReactNode } from "react";
 
@@ -51,12 +51,28 @@ const services = [
   },
 ];
 
-const pillars = [
-  ["AI Agent Development", "Agents that handle support, sales and ops."],
-  ["Web Digital Agency", "Websites and apps built to convert."],
-  ["Real Estate Services", "Media and marketing that sells listings."],
-  ["Media Production", "Video and content with a cinematic edge."],
-] as const;
+const values = [
+  {
+    icon: Lightbulb,
+    title: "Innovation",
+    text: "We prioritize collaboration and innovation to drive success. By fostering effective communication and encouraging teamwork, we empower our clients to harness the collective expertise of their teams and unlock new possibilities.",
+  },
+  {
+    icon: Kanban,
+    title: "Project Management",
+    text: "We understand the importance of effective project management in achieving desired outcomes. Our team is equipped with the skills and tools to meticulously plan and execute projects, keeping a keen eye on deadlines, milestones, and resource allocation.",
+  },
+  {
+    icon: SealCheck,
+    title: "Quality Assurance",
+    text: "Quality is at the core of everything we do. Our relentless commitment to delivering excellence drives our quality assurance protocols. We have implemented robust processes to ensure that our services meet the highest industry standards.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Security",
+    text: "In an increasingly digital world, cybersecurity is of utmost importance. We take the security of your business seriously and employ advanced security measures to safeguard your sensitive data and digital assets.",
+  },
+];
 
 const stats = [
   ["50+", "Projects delivered"],
@@ -381,27 +397,70 @@ export function Services() {
 }
 
 export function About() {
+  const list = useRef<HTMLDivElement>(null);
+  const items = useRef<(HTMLElement | null)[]>([]);
+  const [active, setActive] = useState(0);
+  const [progress, setProgress] = useState(0);
+
+  useEffect(() => {
+    const el = list.current;
+    if (!el) return;
+    let raf = 0;
+    const update = () => {
+      raf = 0;
+      const mid = window.innerHeight * 0.5;
+      const rect = el.getBoundingClientRect();
+      setProgress(Math.min(1, Math.max(0, (mid - rect.top) / rect.height)));
+      let best = 0;
+      let bestDist = Infinity;
+      items.current.forEach((node, i) => {
+        if (!node) return;
+        const r = node.getBoundingClientRect();
+        const dist = Math.abs(r.top + r.height / 2 - mid);
+        if (dist < bestDist) {
+          bestDist = dist;
+          best = i;
+        }
+      });
+      setActive(best);
+    };
+    const onScroll = () => {
+      if (!raf) raf = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  const current = values[active];
+  const CurrentIcon = current.icon;
+
   return (
     <section className="nm-section nm-section--deep" id="about">
       <div className="nm-wrap nm-about2__grid">
-        <div>
-          <Rise>
-            <p className="nm-label">Who is NextMinds</p>
-            <h2 className="nm-h2">
-              A digital studio for <span className="nm-accent">what&rsquo;s next.</span>
-            </h2>
-          </Rise>
-          <Rise className="nm-about2__copy" delay={100}>
-            <p className="nm-body">
-              NextMinds is a team of builders, designers and storytellers. We combine AI, web, real estate media and video
-              production under one roof, so your ideas turn into real results without juggling five different vendors.
-            </p>
-            <p className="nm-body">
-              Registered in 2001, with over 20 years in business, we have the knowledge, experience and expertise to elevate
-              your brand&rsquo;s online image and provide a unique digital experience.
-            </p>
-          </Rise>
-          <Rise>
+        <div className="nm-about2__left">
+          <div className="nm-about2__sticky">
+            <Rise>
+              <p className="nm-label">Who is NextMinds</p>
+              <h2 className="nm-h2">
+                A digital studio for <span className="nm-accent">what&rsquo;s next.</span>
+              </h2>
+            </Rise>
+            <Rise className="nm-about2__copy" delay={100}>
+              <p className="nm-body">
+                NextMinds is a team of builders, designers and storytellers. We combine AI, web, real estate media and video
+                production under one roof, so your ideas turn into real results without juggling five different vendors.
+              </p>
+              <p className="nm-body">
+                Registered in 2001, with over 20 years in business, we have the knowledge, experience and expertise to
+                elevate your brand&rsquo;s online image and provide a unique digital experience.
+              </p>
+            </Rise>
             <dl className="nm-stats">
               {stats.map(([value, label]) => (
                 <div key={label}>
@@ -410,21 +469,44 @@ export function About() {
                 </div>
               ))}
             </dl>
-          </Rise>
+            <div aria-hidden="true" className="nm-reading">
+              <p className="nm-reading__label">You are reading</p>
+              <p className="nm-reading__now" key={active}>
+                <CurrentIcon size={34} weight="duotone" />
+                <span>{current.title}</span>
+              </p>
+              <div className="nm-reading__dots">
+                {values.map((v, i) => (
+                  <i className={i === active ? "is-active" : ""} key={v.title} />
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
 
-        <ul className="nm-pillars">
-          {pillars.map(([title, text], i) => (
-            <Rise as="li" className="nm-pillar" delay={i * 90} key={title}>
-              <span className="nm-pillar__num">0{i + 1}</span>
+        <div className="nm-journey" ref={list}>
+          <span aria-hidden="true" className="nm-journey__track" />
+          <span aria-hidden="true" className="nm-journey__fill" style={{ height: `${progress * 100}%` }} />
+          <span aria-hidden="true" className="nm-journey__head" style={{ top: `${progress * 100}%` }} />
+          {values.map(({ icon: Icon, title, text }, i) => (
+            <article
+              className={`nm-journey__item ${i === active ? "is-active" : ""}`}
+              key={title}
+              ref={(node) => {
+                items.current[i] = node;
+              }}
+            >
+              <p className="nm-journey__num">0{i + 1}</p>
               <div>
+                <span className="nm-journey__icon">
+                  <Icon aria-hidden size={28} weight="duotone" />
+                </span>
                 <h3>{title}</h3>
                 <p>{text}</p>
               </div>
-              <Arrow size={18} />
-            </Rise>
+            </article>
           ))}
-        </ul>
+        </div>
       </div>
     </section>
   );
