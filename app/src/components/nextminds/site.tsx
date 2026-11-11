@@ -2,6 +2,7 @@ import { Brain, Eye, Kanban, Lightbulb, Lightning, SealCheck, ShieldCheck, Targe
 import { useEffect, useRef, useState } from "react";
 import type { ElementType, ReactNode } from "react";
 
+import { DottedGlobe } from "./dotted-globe";
 import "./site.css";
 
 const PHONE = "(289) 690-1777";
@@ -614,42 +615,49 @@ export function Faq() {
 
 export function Contact() {
   return (
-    <section className="nm-section nm-section--deep" id="contact">
+    <section className="nm-section nm-section--contact" id="contact">
       <div className="nm-wrap">
         <Rise className="nm-contact__panel">
-          <div>
+          <div className="nm-contact__main">
+            <p className="nm-label">Start a project</p>
             <h2 className="nm-contact__title">
               Create a new project <span>with us.</span>
             </h2>
+            <p className="nm-contact__lede">
+              Tell us what you&rsquo;re building. We&rsquo;ll get back to you within one business day, wherever you are.
+            </p>
             <a className="nm-pill" href={`mailto:${EMAIL}`}>
               Let&rsquo;s Talk
               <i>
                 <Arrow size={20} />
               </i>
             </a>
+            <dl className="nm-contact__list">
+              <div>
+                <dt>Phone</dt>
+                <dd>
+                  <a href="tel:+12896901777">{PHONE}</a>
+                </dd>
+              </div>
+              <div>
+                <dt>Email</dt>
+                <dd>
+                  <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
+                </dd>
+              </div>
+              <div>
+                <dt>Studio</dt>
+                <dd>
+                  {ADDRESS}
+                  <br />
+                  By appointment only
+                </dd>
+              </div>
+            </dl>
           </div>
-          <dl className="nm-contact__list">
-            <div>
-              <dt>Phone</dt>
-              <dd>
-                <a href="tel:+12896901777">{PHONE}</a>
-              </dd>
-            </div>
-            <div>
-              <dt>Email</dt>
-              <dd>
-                <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
-              </dd>
-            </div>
-            <div>
-              <dt>Studio</dt>
-              <dd>
-                {ADDRESS}
-                <br />
-                By appointment only
-              </dd>
-            </div>
-          </dl>
+          <div className="nm-contact__globe">
+            <DottedGlobe className="nm-contact__canvas" />
+          </div>
         </Rise>
       </div>
     </section>
