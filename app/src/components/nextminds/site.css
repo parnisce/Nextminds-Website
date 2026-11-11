@@ -1,8 +1,8 @@
 /* NextMinds site layer. Tokens come from design-brief.md (client brand colors). */
 :root {
-  --nm-ground: #132c3c;
-  --nm-deep: #0e2230;
-  --nm-surface: #1a394d;
+  --nm-ground: #07121a;
+  --nm-deep: #0a1923;
+  --nm-surface: #132c3c;
   --nm-line: #2b4d63;
   --nm-ink: #eaf4f8;
   --nm-muted: #9db6c4;
@@ -1000,4 +1000,475 @@ body {
 html,
 body {
   overflow-x: clip;
+}
+
+/* ---- Services: richer rows (category, lead, description, feature chips) ---- */
+.nm-row__meta {
+  grid-column: 1;
+  grid-row: 1;
+  color: var(--nm-accent);
+  font-family: var(--nm-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.nm-row__name {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.nm-row__go {
+  grid-row: 2;
+}
+
+.nm-row__lead {
+  grid-column: 1;
+  margin: 0;
+  color: var(--nm-ink);
+  font-size: 1.05rem;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease;
+}
+
+.nm-row.is-active .nm-row__lead {
+  max-height: 4rem;
+  padding-top: 0.5rem;
+}
+
+.nm-row.is-active .nm-row__desc {
+  max-height: 12rem;
+}
+
+.nm-chips {
+  grid-column: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease;
+}
+
+.nm-row.is-active .nm-chips {
+  max-height: 8rem;
+  padding-top: 0.75rem;
+}
+
+.nm-chips li {
+  padding: 0.3rem 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--nm-accent) 45%, transparent);
+  border-radius: 999px;
+  color: var(--nm-ink);
+  font-size: 0.8rem;
+}
+
+@media (max-width: 62rem) {
+  .nm-row__lead,
+  .nm-chips {
+    max-height: none;
+    padding-top: 0.5rem;
+  }
+}
+
+/* ---- Shared section bits ---- */
+.nm-accent {
+  color: var(--nm-accent);
+}
+
+/* ---- About (who is NextMinds) ---- */
+.nm-about2__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: clamp(2rem, 6vw, 6rem);
+  align-items: start;
+}
+
+.nm-about2__copy {
+  margin-top: 1.5rem;
+}
+
+.nm-about2__copy .nm-body + .nm-body {
+  margin-top: 1rem;
+}
+
+.nm-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  margin: 2.5rem 0 0;
+  padding-top: 1.75rem;
+  border-top: 1px solid var(--nm-line);
+}
+
+.nm-stats dt {
+  color: var(--nm-ink);
+  font-size: clamp(1.5rem, 2.6vw, 2.2rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.nm-stats dd {
+  margin: 0.25rem 0 0;
+  color: var(--nm-muted);
+  font-family: var(--nm-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.nm-pillars {
+  display: grid;
+  gap: 0.85rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nm-pillar {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 1.25rem;
+  align-items: center;
+  padding: 1.35rem 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 18px;
+  background: linear-gradient(160deg, rgba(19, 44, 60, 0.7), rgba(8, 20, 29, 0.9));
+  transition:
+    border-color 0.3s,
+    box-shadow 0.3s;
+}
+
+.nm-pillar:hover {
+  border-color: rgba(0, 161, 214, 0.65);
+  box-shadow: 0 0 30px rgba(0, 161, 214, 0.18);
+}
+
+.nm-pillar__num {
+  color: var(--nm-accent);
+  font-family: var(--nm-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.14em;
+}
+
+.nm-pillar h3 {
+  margin: 0 0 0.25rem;
+  font-size: 1.15rem;
+}
+
+.nm-pillar p {
+  margin: 0;
+  color: var(--nm-muted);
+  font-size: 0.9rem;
+}
+
+.nm-pillar svg {
+  color: var(--nm-accent);
+}
+
+/* ---- Why us: cards with icons ---- */
+.nm-why__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.1rem;
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+}
+
+.nm-why__card {
+  position: relative;
+  padding: 1.9rem 1.75rem 2.1rem;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 18px;
+  background: linear-gradient(160deg, rgba(19, 44, 60, 0.7), rgba(8, 20, 29, 0.9));
+  transition:
+    border-color 0.3s,
+    box-shadow 0.3s,
+    transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.nm-why__card:hover {
+  border-color: rgba(0, 161, 214, 0.65);
+  box-shadow: 0 0 34px rgba(0, 161, 214, 0.22);
+}
+
+.nm-why__icon {
+  display: grid;
+  place-items: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  margin-bottom: 2rem;
+  border: 1px solid color-mix(in srgb, var(--nm-accent) 45%, transparent);
+  border-radius: 14px;
+  color: var(--nm-accent);
+  background: color-mix(in srgb, var(--nm-accent) 12%, transparent);
+}
+
+.nm-why__num {
+  position: absolute;
+  top: 1.9rem;
+  right: 1.75rem;
+  color: var(--nm-muted);
+  font-family: var(--nm-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.16em;
+}
+
+.nm-why__card h3 {
+  margin: 0 0 0.6rem;
+  font-size: 1.35rem;
+}
+
+.nm-why__card p {
+  margin: 0;
+  color: var(--nm-muted);
+  font-size: 0.92rem;
+  line-height: 1.65;
+}
+
+.nm-why__line {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--nm-accent), transparent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.5s ease;
+}
+
+.nm-why__card:hover .nm-why__line {
+  transform: scaleX(1);
+}
+
+/* ---- Testimonials: quote cards ---- */
+.nm-quotes {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 1.1rem;
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+}
+
+.nm-qcard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1.75rem;
+  grid-column: span 2;
+  margin: 0;
+  padding: 2.1rem 1.9rem 1.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 18px;
+  background: linear-gradient(160deg, rgba(19, 44, 60, 0.7), rgba(8, 20, 29, 0.9));
+}
+
+.nm-qcard:nth-child(n + 4) {
+  grid-column: span 3;
+}
+
+.nm-qcard__mark {
+  position: absolute;
+  top: 0.4rem;
+  right: 1.5rem;
+  color: rgba(0, 161, 214, 0.35);
+  font-size: 6rem;
+  line-height: 1;
+}
+
+.nm-qcard blockquote {
+  margin: 0;
+  color: #dbe9f1;
+  font-size: 1.02rem;
+  line-height: 1.7;
+}
+
+.nm-qcard figcaption {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.nm-qcard__avatar {
+  display: grid;
+  place-items: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 50%;
+  color: #04202b;
+  background: var(--nm-accent);
+  font-weight: 600;
+}
+
+.nm-qcard figcaption b {
+  display: block;
+  font-size: 0.9rem;
+}
+
+.nm-qcard figcaption small {
+  color: var(--nm-muted);
+  font-size: 0.78rem;
+}
+
+/* ---- FAQ ---- */
+.nm-faq {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: clamp(2rem, 6vw, 7rem);
+  align-items: start;
+}
+
+.nm-faq .nm-body {
+  margin-top: 1.25rem;
+}
+
+.nm-faq__list {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nm-faq__item {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nm-faq__item button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  width: 100%;
+  padding: 1.4rem 0;
+  border: 0;
+  color: var(--nm-ink);
+  background: none;
+  font: inherit;
+  font-size: clamp(1rem, 1.4vw, 1.25rem);
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+}
+
+.nm-faq__item button:hover {
+  color: #6fd8f5;
+}
+
+.nm-faq__item i {
+  position: relative;
+  flex: none;
+  width: 1.9rem;
+  height: 1.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 50%;
+  transition:
+    transform 0.35s,
+    background 0.35s,
+    border-color 0.35s;
+}
+
+.nm-faq__item i::before,
+.nm-faq__item i::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0.75rem;
+  height: 1.5px;
+  background: #fff;
+  transform: translate(-50%, -50%);
+}
+
+.nm-faq__item i::after {
+  transform: translate(-50%, -50%) rotate(90deg);
+  transition: transform 0.35s;
+}
+
+.nm-faq__item.is-open i {
+  border-color: var(--nm-accent);
+  background: var(--nm-accent);
+  transform: rotate(180deg);
+}
+
+.nm-faq__item.is-open i::after {
+  transform: translate(-50%, -50%) rotate(0deg);
+}
+
+.nm-faq__body {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.4s ease;
+}
+
+.nm-faq__body p {
+  min-height: 0;
+  max-width: 40rem;
+  margin: 0;
+  overflow: hidden;
+  color: var(--nm-muted);
+  font-size: 0.98rem;
+  line-height: 1.7;
+}
+
+.nm-faq__item.is-open .nm-faq__body {
+  grid-template-rows: 1fr;
+}
+
+.nm-faq__item.is-open .nm-faq__body p {
+  padding-bottom: 1.5rem;
+}
+
+@media (max-width: 62rem) {
+  .nm-about2__grid,
+  .nm-faq {
+    grid-template-columns: 1fr;
+  }
+
+  .nm-why__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .nm-quotes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .nm-qcard,
+  .nm-qcard:nth-child(n + 4) {
+    grid-column: span 1;
+  }
+}
+
+@media (max-width: 40rem) {
+  .nm-why__grid,
+  .nm-quotes {
+    grid-template-columns: 1fr;
+  }
+
+  .nm-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* ---- Bigger logo, roomier hero chapter list ---- */
+.nm-nav__logo img {
+  width: auto;
+  height: 2.9rem;
+}
+
+.scroll-scrub .scroll-scrub__route {
+  gap: 0.7rem;
+}
+
+.scroll-scrub .scroll-scrub__route-button {
+  min-height: 2rem;
+  padding: 0.35rem 0.5rem;
+}
+
+@media (max-width: 24rem) {
+  .nm-nav__logo img {
+    width: auto;
+    height: 2.4rem;
+  }
 }

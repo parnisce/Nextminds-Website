@@ -5,10 +5,10 @@ import {
   About,
   Clients,
   Contact,
+  Faq,
   Footer,
   HeroActions,
   Nav,
-  Process,
   Services,
   Why,
 } from "@/components/nextminds/site";
@@ -45,8 +45,8 @@ function Index() {
         <Services />
         <About />
         <Why />
-        <Process />
         <Clients />
+        <Faq />
         <Contact />
       </main>
       <Footer />
