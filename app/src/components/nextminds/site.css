@@ -1178,62 +1178,6 @@ body {
   top: 6rem;
 }
 
-.nm-reading {
-  margin-top: 2.25rem;
-}
-
-.nm-reading__label {
-  margin: 0;
-  color: rgba(234, 244, 248, 0.45);
-  font-family: var(--nm-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.26em;
-  text-transform: uppercase;
-}
-
-.nm-reading__now {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  margin: 0.8rem 0 0;
-  color: #fff;
-  font-size: clamp(1.6rem, 2.6vw, 2.3rem);
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  animation: nm-reading-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-.nm-reading__now svg {
-  flex: none;
-  color: var(--nm-accent);
-}
-
-@keyframes nm-reading-in {
-  from {
-    opacity: 0;
-    transform: translateY(0.6rem);
-  }
-}
-
-.nm-reading__dots {
-  display: flex;
-  gap: 0.4rem;
-  margin-top: 1.1rem;
-}
-
-.nm-reading__dots i {
-  width: 20px;
-  height: 3px;
-  border-radius: 3px;
-  background: rgba(255, 255, 255, 0.16);
-  transition: width 0.4s, background 0.4s;
-}
-
-.nm-reading__dots i.is-active {
-  width: 40px;
-  background: var(--nm-accent);
-}
-
 .nm-journey {
   position: relative;
   margin-left: 2.75rem;
@@ -1327,18 +1271,11 @@ body {
   line-height: 1.65;
 }
 
-@media (max-height: 780px) {
-  .nm-reading {
-    display: none;
-  }
-}
-
 @media (max-width: 62rem) {
   .nm-about2__sticky {
     position: static;
   }
 
-  .nm-reading,
   .nm-journey__track,
   .nm-journey__fill,
   .nm-journey__head {
@@ -1354,12 +1291,6 @@ body {
     min-height: 0;
     padding: 2.25rem 0;
     opacity: 1;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .nm-reading__now {
-    animation: none;
   }
 }
 

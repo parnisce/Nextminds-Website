@@ -437,9 +437,6 @@ export function About() {
     };
   }, []);
 
-  const current = values[active];
-  const CurrentIcon = current.icon;
-
   return (
     <section className="nm-section nm-section--deep" id="about">
       <div className="nm-wrap nm-about2__grid">
@@ -469,18 +466,6 @@ export function About() {
                 </div>
               ))}
             </dl>
-            <div aria-hidden="true" className="nm-reading">
-              <p className="nm-reading__label">You are reading</p>
-              <p className="nm-reading__now" key={active}>
-                <CurrentIcon size={34} weight="duotone" />
-                <span>{current.title}</span>
-              </p>
-              <div className="nm-reading__dots">
-                {values.map((v, i) => (
-                  <i className={i === active ? "is-active" : ""} key={v.title} />
-                ))}
-              </div>
-            </div>
           </div>
         </div>
 
