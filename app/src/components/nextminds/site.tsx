@@ -75,10 +75,10 @@ const values = [
 ];
 
 const stats = [
-  ["50+", "Projects delivered"],
-  ["4", "Core disciplines"],
-  ["24/7", "AI agents running"],
-  ["100%", "Client focused"],
+  ["50+", "Projects\nDelivered"],
+  ["4", "Core\nDisciplines"],
+  ["24/7", "AI Agents\nRunning"],
+  ["100%", "Client\nFocused"],
 ] as const;
 
 const reasons = [
