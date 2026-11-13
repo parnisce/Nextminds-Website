@@ -33,13 +33,19 @@ function fmtTime(sec: number) {
 function Card({
   task,
   now,
+  dragging,
   onOpen,
   onToggleTimer,
+  onDragStart,
+  onDragEnd,
 }: {
   task: Task;
   now: number;
+  dragging: boolean;
   onOpen: () => void;
   onToggleTimer: () => void;
+  onDragStart: () => void;
+  onDragEnd: () => void;
 }) {
   const overdue = task.due_date && task.status !== "done" && task.due_date < today();
   const done = task.checklist.filter((c) => c.done).length;
@@ -47,12 +53,14 @@ function Card({
 
   return (
     <article
-      className={`nma-task ${running ? "is-running" : ""}`}
+      className={`nma-task ${running ? "is-running" : ""} ${dragging ? "is-dragging" : ""}`}
       draggable
       onClick={onOpen}
+      onDragEnd={onDragEnd}
       onDragStart={(e: DragEvent) => {
         e.dataTransfer.setData("text/plain", task.id);
         e.dataTransfer.effectAllowed = "move";
+        onDragStart();
       }}
     >
       <p className={`nma-task__status nma-task__status--${task.status}`}>
@@ -102,6 +110,7 @@ function TaskModal({ task, startStatus, onClose }: { task: Task | null; startSta
     priority: task?.priority ?? ("medium" as TaskPriority),
     due_date: task?.due_date ?? "",
     tag: task?.tag ?? "",
+    estimate: task?.estimate_minutes ? String(task.estimate_minutes / 60) : "",
     checklist: task?.checklist ?? [],
   });
   const [item, setItem] = useState("");
@@ -119,7 +128,9 @@ function TaskModal({ task, startStatus, onClose }: { task: Task | null; startSta
   const save = async () => {
     if (!form.title.trim()) return toast("Give the task a title.", "err");
     setBusy(true);
+    const estimate = Math.max(0, Math.round(Number(form.estimate || 0) * 60));
     const body = {
+      ...(estimate || task?.estimate_minutes ? { estimate_minutes: estimate } : {}),
       title: form.title.trim(),
       description: form.description.trim(),
       status: form.status,
@@ -188,6 +199,9 @@ function TaskModal({ task, startStatus, onClose }: { task: Task | null; startSta
             </Field>
             <Field label="Tag">
               <input onChange={(e) => patch({ tag: e.target.value })} placeholder="website, content, design…" value={form.tag} />
+            </Field>
+            <Field hint="Used in the time summary" label="Estimate (hours)">
+              <input min="0" onChange={(e) => patch({ estimate: e.target.value })} placeholder="e.g. 1.5" step="0.25" type="number" value={form.estimate} />
             </Field>
           </div>
 
@@ -268,12 +282,79 @@ function TaskModal({ task, startStatus, onClose }: { task: Task | null; startSta
   );
 }
 
+function Summary({ tasks, now }: { tasks: Task[]; now: number }) {
+  const total = tasks.length;
+  const done = tasks.filter((t) => t.status === "done").length;
+  const logged = tasks.reduce((n, t) => n + elapsed(t, now), 0);
+  const estimated = tasks.reduce((n, t) => n + (t.estimate_minutes ?? 0) * 60, 0);
+  const inProgress = tasks.filter((t) => t.status === "in_progress").length;
+  const blocked = tasks.filter((t) => t.status === "blocked").length;
+  const open = tasks.filter((t) => t.status === "open").length;
+
+  const dated = tasks.filter((t) => t.status !== "done" && t.due_date).sort((a, b) => a.due_date!.localeCompare(b.due_date!));
+  const next = dated[0];
+  let dueText = "No due dates";
+  let dueLate = false;
+  if (next?.due_date) {
+    const days = Math.round((new Date(`${next.due_date}T00:00:00`).getTime() - new Date(`${today()}T00:00:00`).getTime()) / 86400000);
+    dueLate = days < 0;
+    dueText = days < 0 ? `${-days} day${days === -1 ? "" : "s"} late` : days === 0 ? "Due today" : `in ${days} day${days === 1 ? "" : "s"}`;
+  }
+
+  const bar = (ratio: number) => (
+    <span className="nma-tbar">
+      <i style={{ width: `${Math.min(100, Math.max(0, ratio * 100))}%` }} />
+    </span>
+  );
+
+  return (
+    <div className="nma-tstats">
+      <div>
+        <small>Tasks done</small>
+        <b>
+          {done} / {total}
+        </b>
+        {bar(total ? done / total : 0)}
+      </div>
+      <div>
+        <small>Time logged</small>
+        <b>{fmtTime(logged)}</b>
+        {estimated ? (
+          <>
+            <em>of {fmtTime(estimated)} estimated</em>
+            {bar(logged / estimated)}
+          </>
+        ) : (
+          <em>Add estimates to track against</em>
+        )}
+      </div>
+      <div>
+        <small>In progress</small>
+        <b>{inProgress}</b>
+        <em>
+          {blocked} blocked · {open} open
+        </em>
+      </div>
+      <div>
+        <small>Due</small>
+        <b className={dueLate ? "is-late" : ""}>{dueText}</b>
+        <em>
+          {next?.due_date
+            ? new Date(`${next.due_date}T00:00:00`).toLocaleDateString("en-CA", { weekday: "long", day: "numeric", month: "long" })
+            : "Nothing scheduled"}
+        </em>
+      </div>
+    </div>
+  );
+}
+
 export function TasksPage() {
   const { tasks, tasksReady, loading, updateTask } = useAdminData();
   const toast = useToast();
   const [view, setView] = useState<"board" | "list">("board");
   const [modal, setModal] = useState<{ task: Task | null; status: TaskStatus } | null>(null);
   const [over, setOver] = useState<TaskStatus | null>(null);
+  const [dragId, setDragId] = useState<string | null>(null);
   const [now, setNow] = useState(() => Date.now());
 
   // Remember the chosen view.
@@ -340,7 +421,8 @@ export function TasksPage() {
   const dropOn = (e: DragEvent, status: TaskStatus) => {
     e.preventDefault();
     setOver(null);
-    move(e.dataTransfer.getData("text/plain"), status);
+    setDragId(null);
+    move(e.dataTransfer.getData("text/plain") || (dragId ?? ""), status);
   };
 
   if (!loading && !tasksReady) {
@@ -381,6 +463,8 @@ export function TasksPage() {
         </div>
       </div>
 
+      <Summary now={now} tasks={tasks} />
+
       {view === "board" ? (
         <div className="nma-board">
           {columns.map((c) => (
@@ -401,7 +485,15 @@ export function TasksPage() {
               </header>
               <div className="nma-col__body">
                 {grouped[c.id].map((t) => (
-                  <Card key={t.id} now={now} onOpen={() => setModal({ task: t, status: t.status })} onToggleTimer={() => toggleTimer(t)} task={t} />
+                  <Card
+                    dragging={dragId === t.id}
+                    key={t.id}
+                    onDragEnd={() => {
+                      setDragId(null);
+                      setOver(null);
+                    }}
+                    onDragStart={() => setDragId(t.id)}
+                    now={now} onOpen={() => setModal({ task: t, status: t.status })} onToggleTimer={() => toggleTimer(t)} task={t} />
                 ))}
                 <button className="nma-col__add" onClick={() => setModal({ task: null, status: c.id })} type="button">
                   <Plus size={16} /> Add

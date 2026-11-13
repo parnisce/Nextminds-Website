@@ -78,6 +78,7 @@ export type Task = {
   tag: string;
   checklist: { text: string; done: boolean }[];
   time_seconds: number;
+  estimate_minutes?: number;
   timer_started_at: string | null;
   created_at: string;
   updated_at: string;
@@ -160,8 +161,8 @@ function demoData(): { enquiries: Enquiry[]; posts: Post[]; tasks: Task[] } {
   const tasks = [
     mk(0, { title: "Change the testimonial content", priority: "high", due_date: iso(-14) }),
     mk(1, { title: "Create separate page for portfolio", description: "Showcase our work with a filter by service.", due_date: iso(-6) }),
-    mk(2, { title: "Write launch announcement post", status: "in_progress", priority: "high", due_date: iso(3), tag: "content", time_seconds: 2400, checklist: [{ text: "Outline", done: true }, { text: "Draft", done: false }, { text: "Add cover image", done: false }] }),
-    mk(3, { title: "Deploy the site", status: "done", priority: "high", description: "Pick a host, run the production build and point the domain at it.", checklist: [{ text: "Build", done: true }, { text: "DNS", done: true }] }),
+    mk(2, { title: "Write launch announcement post", status: "in_progress", priority: "high", due_date: iso(3), tag: "content", time_seconds: 2400, estimate_minutes: 90, checklist: [{ text: "Outline", done: true }, { text: "Draft", done: false }, { text: "Add cover image", done: false }] }),
+    mk(3, { title: "Deploy the site", status: "done", priority: "high", estimate_minutes: 60, time_seconds: 3000, description: "Pick a host, run the production build and point the domain at it.", checklist: [{ text: "Build", done: true }, { text: "DNS", done: true }] }),
     mk(4, { title: "Build the contact form", status: "done", priority: "high", time_seconds: 5700 }),
   ];
   return { enquiries, posts, tasks };

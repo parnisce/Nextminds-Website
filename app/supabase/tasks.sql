@@ -21,3 +21,6 @@ alter table public.tasks enable row level security;
 drop policy if exists "admin manages tasks" on public.tasks;
 create policy "admin manages tasks" on public.tasks
   for all to authenticated using (public.is_admin()) with check (public.is_admin());
+
+-- Estimated time per task, in minutes (used by the summary bar on the Tasks page).
+alter table public.tasks add column if not exists estimate_minutes integer not null default 0;

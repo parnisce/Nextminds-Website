@@ -1683,3 +1683,90 @@
     grid-template-columns: repeat(4, 17rem);
   }
 }
+
+/* Tasks summary strip + drag feedback ------------------------------------------ */
+.nma-tstats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-bottom: 1rem;
+  overflow: hidden;
+  border: 1px solid var(--nma-line);
+  border-radius: 1.1rem;
+  background: linear-gradient(180deg, var(--nma-panel), #0a1b27);
+}
+
+.nma-tstats > div {
+  display: grid;
+  align-content: start;
+  gap: 0.55rem;
+  padding: 1.1rem 1.5rem 1.25rem;
+  border-right: 1px solid var(--nma-line);
+}
+
+.nma-tstats > div:last-child {
+  border-right: 0;
+}
+
+.nma-tstats small {
+  color: var(--nma-muted);
+  font-family: var(--nm-mono, ui-monospace, monospace);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.nma-tstats b {
+  font-family: var(--nm-mono, ui-monospace, monospace);
+  font-size: 1.7rem;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+.nma-tstats b.is-late {
+  color: #ff6b6b;
+}
+
+.nma-tstats em {
+  color: var(--nma-muted);
+  font-size: 0.88rem;
+  font-style: normal;
+}
+
+.nma-tbar {
+  display: block;
+  height: 0.28rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 8%);
+}
+
+.nma-tbar i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #12d6f0;
+  transition: width 0.5s ease;
+}
+
+.nma-task.is-dragging {
+  opacity: 0.4;
+  transform: scale(0.98);
+}
+
+.nma-col__body {
+  min-height: 4rem;
+}
+
+@media (max-width: 900px) {
+  .nma-tstats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .nma-tstats > div:nth-child(2) {
+    border-right: 0;
+  }
+
+  .nma-tstats > div:nth-child(-n + 2) {
+    border-bottom: 1px solid var(--nma-line);
+  }
+}
