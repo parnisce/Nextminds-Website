@@ -379,7 +379,7 @@ export function Services() {
             <div aria-hidden="true" className="nm-work__media">
               {services.map((s, i) => (
                 <div className="nm-work__layer" key={s.image} ref={(node) => { layers.current[i] = node; }}>
-                  <img alt="" draggable={false} src={s.image} />
+                  <img alt="" decoding="async" draggable={false} loading="lazy" src={s.image} />
                 </div>
               ))}
             </div>
