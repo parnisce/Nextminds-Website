@@ -1,5 +1,5 @@
 import { CheckSquare, ListChecks, Pause, Play, Plus, SquaresFour, Trash, X } from "@phosphor-icons/react";
-import { useEffect, useMemo, useState, type DragEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
 
 import { type Task, type TaskPriority, type TaskStatus, useAdminData } from "./data";
 import { Confirm, Field, PageHead, useToast } from "./ui";
@@ -34,18 +34,18 @@ function Card({
   task,
   now,
   dragging,
+  ghost,
   onOpen,
   onToggleTimer,
-  onDragStart,
-  onDragEnd,
+  onPointerDown,
 }: {
   task: Task;
   now: number;
-  dragging: boolean;
-  onOpen: () => void;
-  onToggleTimer: () => void;
-  onDragStart: () => void;
-  onDragEnd: () => void;
+  dragging?: boolean;
+  ghost?: boolean;
+  onOpen?: () => void;
+  onToggleTimer?: () => void;
+  onPointerDown?: (e: ReactPointerEvent<HTMLElement>) => void;
 }) {
   const overdue = task.due_date && task.status !== "done" && task.due_date < today();
   const done = task.checklist.filter((c) => c.done).length;
@@ -53,15 +53,10 @@ function Card({
 
   return (
     <article
-      className={`nma-task ${running ? "is-running" : ""} ${dragging ? "is-dragging" : ""}`}
-      draggable
+      className={`nma-task ${running ? "is-running" : ""} ${dragging ? "is-dragging" : ""} ${ghost ? "is-ghost" : ""}`}
+      data-task={task.id}
       onClick={onOpen}
-      onDragEnd={onDragEnd}
-      onDragStart={(e: DragEvent) => {
-        e.dataTransfer.setData("text/plain", task.id);
-        e.dataTransfer.effectAllowed = "move";
-        onDragStart();
-      }}
+      onPointerDown={onPointerDown}
     >
       <p className={`nma-task__status nma-task__status--${task.status}`}>
         <i /> {statusText[task.status]}
@@ -89,7 +84,7 @@ function Card({
           className="nma-task__play"
           onClick={(e) => {
             e.stopPropagation();
-            onToggleTimer();
+            onToggleTimer?.();
           }}
           type="button"
         >
@@ -354,7 +349,8 @@ export function TasksPage() {
   const [view, setView] = useState<"board" | "list">("board");
   const [modal, setModal] = useState<{ task: Task | null; status: TaskStatus } | null>(null);
   const [over, setOver] = useState<TaskStatus | null>(null);
-  const [dragId, setDragId] = useState<string | null>(null);
+  const [drag, setDrag] = useState<{ id: string; x: number; y: number; dx: number; dy: number; w: number } | null>(null);
+  const justDragged = useRef(false);
   const [now, setNow] = useState(() => Date.now());
 
   // Remember the chosen view.
@@ -418,12 +414,59 @@ export function TasksPage() {
     void updateTask(id, patch).catch(fail);
   };
 
-  const dropOn = (e: DragEvent, status: TaskStatus) => {
-    e.preventDefault();
-    setOver(null);
-    setDragId(null);
-    move(e.dataTransfer.getData("text/plain") || (dragId ?? ""), status);
+  // Pointer-based drag (mouse, pen and touch): the card lifts, tilts and follows the cursor.
+  const startPress = (task: Task, e: ReactPointerEvent<HTMLElement>) => {
+    if (e.button !== 0 || (e.target as HTMLElement).closest("button")) return;
+    const el = e.currentTarget;
+    const rect = el.getBoundingClientRect();
+    const start = { x: e.clientX, y: e.clientY };
+    const offset = { dx: e.clientX - rect.left, dy: e.clientY - rect.top, w: rect.width };
+    let active = false;
+    let target: TaskStatus | null = null;
+
+    const colAt = (x: number, y: number) => {
+      const col = document.elementsFromPoint(x, y).find((n) => (n as HTMLElement).dataset?.status) as HTMLElement | undefined;
+      return (col?.dataset.status as TaskStatus | undefined) ?? null;
+    };
+
+    const onMove = (ev: PointerEvent) => {
+      if (!active) {
+        if (Math.hypot(ev.clientX - start.x, ev.clientY - start.y) < 6) return;
+        active = true;
+        document.body.classList.add("nma-dragging");
+      }
+      ev.preventDefault();
+      target = colAt(ev.clientX, ev.clientY);
+      setOver(target);
+      setDrag({ id: task.id, x: ev.clientX, y: ev.clientY, ...offset });
+    };
+
+    const finish = (ev: PointerEvent, cancelled: boolean) => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+      window.removeEventListener("pointercancel", onCancel);
+      document.body.classList.remove("nma-dragging");
+      if (active) {
+        // Swallow the click that follows a drag so the edit window doesn't open.
+        justDragged.current = true;
+        window.setTimeout(() => {
+          justDragged.current = false;
+        }, 0);
+        if (!cancelled && target) move(task.id, target);
+      }
+      setDrag(null);
+      setOver(null);
+      void ev;
+    };
+    const onUp = (ev: PointerEvent) => finish(ev, false);
+    const onCancel = (ev: PointerEvent) => finish(ev, true);
+
+    window.addEventListener("pointermove", onMove, { passive: false });
+    window.addEventListener("pointerup", onUp);
+    window.addEventListener("pointercancel", onCancel);
   };
+
+  const dragged = drag ? tasks.find((t) => t.id === drag.id) : undefined;
 
   if (!loading && !tasksReady) {
     return (
@@ -468,16 +511,7 @@ export function TasksPage() {
       {view === "board" ? (
         <div className="nma-board">
           {columns.map((c) => (
-            <section
-              className={`nma-col ${over === c.id ? "is-over" : ""}`}
-              key={c.id}
-              onDragLeave={() => setOver((o) => (o === c.id ? null : o))}
-              onDragOver={(e) => {
-                e.preventDefault();
-                setOver(c.id);
-              }}
-              onDrop={(e) => dropOn(e, c.id)}
-            >
+            <section className={`nma-col ${over === c.id && dragged && dragged.status !== c.id ? "is-over" : ""}`} data-status={c.id} key={c.id}>
               <header className="nma-col__head">
                 <span className={`nma-dot nma-dot--${c.tone}`} />
                 <b>{c.label}</b>
@@ -486,14 +520,16 @@ export function TasksPage() {
               <div className="nma-col__body">
                 {grouped[c.id].map((t) => (
                   <Card
-                    dragging={dragId === t.id}
+                    dragging={drag?.id === t.id}
                     key={t.id}
-                    onDragEnd={() => {
-                      setDragId(null);
-                      setOver(null);
+                    now={now}
+                    onOpen={() => {
+                      if (!justDragged.current) setModal({ task: t, status: t.status });
                     }}
-                    onDragStart={() => setDragId(t.id)}
-                    now={now} onOpen={() => setModal({ task: t, status: t.status })} onToggleTimer={() => toggleTimer(t)} task={t} />
+                    onPointerDown={(e) => startPress(t, e)}
+                    onToggleTimer={() => toggleTimer(t)}
+                    task={t}
+                  />
                 ))}
                 <button className="nma-col__add" onClick={() => setModal({ task: null, status: c.id })} type="button">
                   <Plus size={16} /> Add
@@ -530,6 +566,12 @@ export function TasksPage() {
           )}
         </div>
       )}
+
+      {drag && dragged ? (
+        <div className="nma-ghost" style={{ width: drag.w, transform: `translate(${drag.x - drag.dx}px, ${drag.y - drag.dy}px) rotate(-2.5deg)` }}>
+          <Card ghost now={now} task={dragged} />
+        </div>
+      ) : null}
 
       {modal ? <TaskModal key={modal.task?.id ?? `new-${modal.status}`} onClose={() => setModal(null)} startStatus={modal.status} task={modal.task} /> : null}
     </>
