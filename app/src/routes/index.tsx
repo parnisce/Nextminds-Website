@@ -1,5 +1,6 @@
 import { Browser, FilmSlate, HouseLine, Robot } from "@phosphor-icons/react";
 import { createFileRoute } from "@tanstack/react-router";
+import { useMemo } from "react";
 
 import {
   About,
@@ -12,6 +13,7 @@ import {
   Services,
   Why,
 } from "@/components/nextminds/site";
+import { HomeContentContext, fetchHome } from "@/lib/content";
 import { SITE_URL, organization, pageHead } from "@/lib/seo";
 import { SmoothScroll } from "@/components/nextminds/smooth-scroll";
 import { ScrollScrub } from "@/components/scroll-scrub/scroll-scrub";
@@ -35,6 +37,7 @@ export const Route = createFileRoute("/")({
         },
       ],
     }),
+  loader: () => fetchHome(),
   component: Index,
 });
 
@@ -47,15 +50,25 @@ const sceneIcons: Record<string, React.ReactNode> = {
   "scene-04": <FilmSlate aria-hidden size={14} weight="duotone" />,
 };
 
-const scenes = scrollScrubScenes.map((scene) => ({
-  ...scene,
-  actions: <HeroActions />,
-  icon: sceneIcons[scene.id],
-}));
+const heroActions = <HeroActions />;
 
 function Index() {
+  const home = Route.useLoaderData();
+  // Rebuilt only when the saved hero copy changes, so the scrub controller keeps a stable scenes array.
+  const scenes = useMemo(
+    () =>
+      scrollScrubScenes.map((scene, i) => ({
+        ...scene,
+        kicker: home.hero[i]?.kicker ?? scene.kicker,
+        title: home.hero[i]?.title ?? scene.title,
+        body: home.hero[i]?.body ?? scene.body,
+        actions: heroActions,
+        icon: sceneIcons[scene.id],
+      })),
+    [home.hero],
+  );
   return (
-    <>
+    <HomeContentContext.Provider value={home}>
       <SmoothScroll />
       <Nav />
       <main>
@@ -68,6 +81,6 @@ function Index() {
         <Contact />
       </main>
       <Footer />
-    </>
+    </HomeContentContext.Provider>
   );
 }

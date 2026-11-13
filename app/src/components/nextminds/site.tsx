@@ -1,6 +1,8 @@
 import { Brain, Eye, Kanban, Lightbulb, Lightning, SealCheck, ShieldCheck, Target, TrendUp, UsersThree } from "@phosphor-icons/react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
+
+import { useHome, type HomeContent } from "@/lib/content";
 import type { ElementType, ReactNode } from "react";
 
 import "./site.css";
@@ -102,35 +104,7 @@ export const b2cServices = [
 export type ServiceItem = (typeof services)[number] | (typeof b2cServices)[number];
 export const allServices: ServiceItem[] = [...services, ...b2cServices];
 
-const values = [
-  {
-    icon: Lightbulb,
-    title: "Innovation",
-    text: "We prioritize collaboration and innovation to drive success. By fostering effective communication and encouraging teamwork, we empower our clients to harness the collective expertise of their teams and unlock new possibilities.",
-  },
-  {
-    icon: Kanban,
-    title: "Project Management",
-    text: "We understand the importance of effective project management in achieving desired outcomes. Our team is equipped with the skills and tools to meticulously plan and execute projects, keeping a keen eye on deadlines, milestones, and resource allocation.",
-  },
-  {
-    icon: SealCheck,
-    title: "Quality Assurance",
-    text: "Quality is at the core of everything we do. Our relentless commitment to delivering excellence drives our quality assurance protocols. We have implemented robust processes to ensure that our services meet the highest industry standards.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Security",
-    text: "In an increasingly digital world, cybersecurity is of utmost importance. We take the security of your business seriously and employ advanced security measures to safeguard your sensitive data and digital assets.",
-  },
-];
-
-const stats = [
-  ["50+", "Projects\nDelivered"],
-  ["4", "Core\nDisciplines"],
-  ["24/7", "AI Agents\nRunning"],
-  ["100%", "Client\nFocused"],
-] as const;
+const valueIcons = [Lightbulb, Kanban, SealCheck, ShieldCheck];
 
 const reasons = [
   { icon: Brain, title: "AI-first thinking", text: "We build automation and intelligence into every project, not as an afterthought." },
@@ -139,43 +113,6 @@ const reasons = [
   { icon: TrendUp, title: "Built to scale", text: "Clean, modern code and systems that grow with your business." },
   { icon: Eye, title: "Transparent process", text: "Straight answers, honest timelines and no surprises on scope or cost." },
   { icon: Target, title: "Results you can measure", text: "We tie the work to the goals that matter: leads, sales and time saved." },
-];
-
-const faqs = [
-  ["What services does NextMinds offer?", "AI agent development, web design and development, real estate media, and video production."],
-  ["How long does a typical project take?", "Placeholder answer. Most projects take a few weeks depending on scope. We agree on milestones up front."],
-  ["Do you work with small businesses?", "Placeholder answer. Yes, we work with businesses of all sizes, from startups to established companies."],
-  ["How does pricing work?", "Placeholder answer. We scope each project and quote a clear fixed price or a monthly plan."],
-  ["Can you integrate AI into our existing tools?", "Placeholder answer. Yes, we connect agents to CRMs, calendars, help desks and your own APIs."],
-  ["What happens after launch?", "Placeholder answer. We offer support and improvement plans so your project keeps performing."],
-];
-
-const clients = [
-  {
-    quote: "The team was professional, responsive and most importantly, delivered results.",
-    name: "Ryan B. Moore",
-    role: "Financial Advisor",
-  },
-  {
-    quote: "From design to development, their team was able to take my vision and turn it into a reality.",
-    name: "Ruth Cole",
-    role: "Real Estate Agent",
-  },
-  {
-    quote: "They helped me create a social media strategy that's been driving real results for my business.",
-    name: "Leila Burke",
-    role: "Clinic Manager",
-  },
-  {
-    quote: "Their attention to detail and professionalism were top-notch, and the final product exceeded our expectations.",
-    name: "Glenn Nelson",
-    role: "Gym Owner",
-  },
-  {
-    quote: "Their team was very patient and always willing to make changes and tweaks until we were completely satisfied.",
-    name: "Brad Wright",
-    role: "Real Estate Agent",
-  },
 ];
 
 export function Arrow({ size = 18 }: { size?: number }) {
@@ -288,6 +225,9 @@ export function Nav() {
             </a>
           ),
         )}
+        <Link onClick={close} to="/blog">
+          Blog
+        </Link>
         <Link className="nm-navcta" onClick={close} to="/contact">
           Contact Us
         </Link>
@@ -462,6 +402,7 @@ export function Services() {
 }
 
 export function About() {
+  const { about } = useHome();
   const list = useRef<HTMLDivElement>(null);
   const items = useRef<(HTMLElement | null)[]>([]);
   const [active, setActive] = useState(0);
@@ -514,18 +455,15 @@ export function About() {
               </h2>
             </Rise>
             <Rise className="nm-about2__copy" delay={100}>
-              <p className="nm-body">
-                NextMinds is a team of builders, designers and storytellers. We combine AI, web, real estate media and video
-                production under one roof, so your ideas turn into real results without juggling five different vendors.
-              </p>
-              <p className="nm-body">
-                Registered in 2001, with over 20 years in business, we have the knowledge, experience and expertise to
-                elevate your brand&rsquo;s online image and provide a unique digital experience.
-              </p>
+              {about.intro.map((p) => (
+                <p className="nm-body" key={p}>
+                  {p}
+                </p>
+              ))}
             </Rise>
             <dl className="nm-stats">
-              {stats.map(([value, label]) => (
-                <div key={label}>
+              {about.stats.map(({ value, label }, i) => (
+                <div key={i}>
                   <dt>{value}</dt>
                   <dd>{label}</dd>
                 </div>
@@ -538,10 +476,12 @@ export function About() {
           <span aria-hidden="true" className="nm-journey__track" />
           <span aria-hidden="true" className="nm-journey__fill" style={{ height: `${progress * 100}%` }} />
           <span aria-hidden="true" className="nm-journey__head" style={{ top: `${progress * 100}%` }} />
-          {values.map(({ icon: Icon, title, text }, i) => (
+          {about.values.map(({ title, text }, i) => {
+            const Icon = valueIcons[i] ?? Lightbulb;
+            return (
             <article
               className={`nm-journey__item ${i === active ? "is-active" : ""}`}
-              key={title}
+              key={i}
               ref={(node) => {
                 items.current[i] = node;
               }}
@@ -555,7 +495,8 @@ export function About() {
                 <p>{text}</p>
               </div>
             </article>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>
@@ -590,7 +531,7 @@ export function Why() {
   );
 }
 
-function QuoteCard({ quote, name, role }: (typeof clients)[number]) {
+function QuoteCard({ quote, name, role }: HomeContent["testimonials"][number]) {
   return (
     <figure className="nm-qcard">
       <span aria-hidden="true" className="nm-qcard__mark">
@@ -608,13 +549,13 @@ function QuoteCard({ quote, name, role }: (typeof clients)[number]) {
   );
 }
 
-function QuoteRow({ items, reverse = false }: { items: typeof clients; reverse?: boolean }) {
+function QuoteRow({ items, reverse = false }: { items: HomeContent["testimonials"]; reverse?: boolean }) {
   return (
     <div className={`nm-marquee ${reverse ? "is-reverse" : ""}`}>
       {[0, 1, 2, 3].map((copy) => (
         <div aria-hidden={copy > 0} className="nm-marquee__group" key={copy}>
-          {items.map((c) => (
-            <QuoteCard key={c.name} {...c} />
+          {items.map((c, i) => (
+            <QuoteCard key={`${c.name}-${i}`} {...c} />
           ))}
         </div>
       ))}
@@ -623,6 +564,7 @@ function QuoteRow({ items, reverse = false }: { items: typeof clients; reverse?:
 }
 
 export function Clients() {
+  const { testimonials: clients } = useHome();
   const firstRow = clients;
   const secondRow = [...clients.slice(3), ...clients.slice(0, 3)];
 
@@ -647,6 +589,7 @@ export function Clients() {
 }
 
 export function Faq() {
+  const { faqs } = useHome();
   const [open, setOpen] = useState(0);
 
   return (
@@ -660,8 +603,8 @@ export function Faq() {
           <p className="nm-body">Can&rsquo;t find what you need? Reach out and we&rsquo;ll get back to you quickly.</p>
         </Rise>
         <div className="nm-faq__list">
-          {faqs.map(([q, a], i) => (
-            <Rise className={`nm-faq__item ${open === i ? "is-open" : ""}`} delay={i * 60} key={q}>
+          {faqs.map(({ q, a }, i) => (
+            <Rise className={`nm-faq__item ${open === i ? "is-open" : ""}`} delay={i * 60} key={`${q}-${i}`}>
               <button aria-expanded={open === i} onClick={() => setOpen(open === i ? -1 : i)} type="button">
                 <span>{q}</span>
                 <i aria-hidden="true" />
@@ -678,6 +621,7 @@ export function Faq() {
 }
 
 export function Contact() {
+  const { cta } = useHome();
   return (
     <section className="nm-section nm-section--contact" id="contact">
       <div className="nm-cta">
@@ -687,15 +631,12 @@ export function Contact() {
 
         <Rise className="nm-cta__inner">
           <p className="nm-cta__badge">
-            <i /> Now booking new projects
+            <i /> {cta.badge}
           </p>
           <h2 className="nm-cta__title">
-            Create a new project <span>with us.</span>
+            {cta.title} <span>{cta.accent}</span>
           </h2>
-          <p className="nm-cta__lede">
-            Tell us what you&rsquo;re building. We&rsquo;ll get back to you within one business day with ideas, a plan and a
-            clear next step.
-          </p>
+          <p className="nm-cta__lede">{cta.lede}</p>
           <div className="nm-cta__actions">
             <Link className="nm-pill" to="/contact">
               Let&rsquo;s Talk
@@ -774,6 +715,9 @@ export function Footer() {
               <li>{ADDRESS}</li>
               <li>
                 <Link to="/contact">Contact page</Link>
+              </li>
+              <li>
+                <Link to="/blog">Blog</Link>
               </li>
             </ul>
           </div>

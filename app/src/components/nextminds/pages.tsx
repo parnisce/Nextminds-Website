@@ -35,6 +35,8 @@ import {
 import type { Icon } from "@phosphor-icons/react";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
+
+import { supabase } from "@/lib/supabase";
 import type { FormEvent, ReactNode } from "react";
 
 import { ADDRESS, Arrow, EMAIL, Footer, Nav, PHONE, Rise, allServices, b2cServices, services } from "./site";
@@ -386,26 +388,35 @@ const infoCards: { icon: Icon; label: string; value: string; href?: string; note
 ];
 
 export function ContactPage() {
-  const [sent, setSent] = useState(false);
+  const [state, setState] = useState<"idle" | "sending" | "sent" | "error">("idle");
 
-  // No backend is wired up yet, so submitting opens the visitor's email app with the message filled in.
-  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+  // Enquiries are saved to the database and show up in the admin dashboard.
+  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
+    const form = event.currentTarget;
+    const data = new FormData(form);
     const get = (key: string) => String(data.get(key) ?? "").trim();
-    const subject = `New project enquiry${get("service") ? `: ${get("service")}` : ""}`;
-    const body = [
-      `Name: ${get("name")}`,
-      `Email: ${get("email")}`,
-      get("phone") ? `Phone: ${get("phone")}` : "",
-      get("service") ? `Service: ${get("service")}` : "",
-      "",
-      get("message"),
-    ]
-      .filter((line, i) => line || i === 4)
-      .join("\n");
-    window.location.href = `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    setSent(true);
+    if (get("website")) {
+      // Honeypot field filled in: a bot. Pretend it worked.
+      setState("sent");
+      return;
+    }
+    setState("sending");
+    const { error } = await supabase()
+      .from("enquiries")
+      .insert({
+        name: get("name").slice(0, 120),
+        email: get("email").slice(0, 200),
+        phone: get("phone").slice(0, 40) || null,
+        service: get("service").slice(0, 120) || null,
+        message: get("message").slice(0, 5000),
+      });
+    if (error) {
+      setState("error");
+      return;
+    }
+    form.reset();
+    setState("sent");
   };
 
   return (
@@ -457,6 +468,7 @@ export function ContactPage() {
           </div>
 
           <form className="nm-form" onSubmit={onSubmit}>
+            <input aria-hidden="true" autoComplete="off" className="nm-form__hp" name="website" tabIndex={-1} type="text" />
             <div className="nm-form__row">
               <label>
                 <span>Name</span>
@@ -489,12 +501,17 @@ export function ContactPage() {
               <span>Tell us about your project</span>
               <textarea name="message" placeholder="What are you looking to build?" required rows={6} />
             </label>
-            <button className="nm-work__btn nm-work__btn--solid nm-form__submit" type="submit">
-              Send message <Arrow size={16} />
+            <button className="nm-work__btn nm-work__btn--solid nm-form__submit" disabled={state === "sending"} type="submit">
+              {state === "sending" ? "Sending..." : "Send message"} <Arrow size={16} />
             </button>
-            {sent ? (
+            {state === "sent" ? (
               <p className="nm-form__note" role="status">
-                Your email app should open with the message ready to send. If it doesn&rsquo;t, write to {EMAIL}.
+                Thank you! Your message is in and we&rsquo;ll reply within one business day.
+              </p>
+            ) : null}
+            {state === "error" ? (
+              <p className="nm-form__note" role="alert">
+                Something went wrong sending your message. Please try again or write to {EMAIL}.
               </p>
             ) : null}
           </form>

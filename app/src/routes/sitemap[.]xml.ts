@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+import { fetchPosts } from "../lib/content";
 import { SITE_URL, serviceSlugs } from "../lib/seo";
 
 export const Route = createFileRoute("/sitemap.xml")({
@@ -8,7 +9,14 @@ export const Route = createFileRoute("/sitemap.xml")({
       GET: async () => {
         const origin = SITE_URL;
         const today = new Date().toISOString().split("T")[0];
-        const paths = ["/", "/contact", ...serviceSlugs.map((slug) => `/services/${slug}`)];
+        const posts = await fetchPosts();
+        const paths = [
+          "/",
+          "/contact",
+          "/blog",
+          ...serviceSlugs.map((slug) => `/services/${slug}`),
+          ...posts.map((p) => `/blog/${p.slug}`),
+        ];
         const urls = paths.flatMap((path) => [
           "  <url>",
           `    <loc>${origin}${path}</loc>`,
