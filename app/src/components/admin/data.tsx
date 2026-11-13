@@ -23,17 +23,25 @@ export function useAdminAuth(): AuthState {
       const email = data.session?.user.email;
       if (!alive) return;
       if (!email) return setState({ status: "out" });
-      const { data: isAdmin } = await sb.rpc("is_admin");
+      const { data: isAdmin, error } = await sb.rpc("is_admin");
       if (!alive) return;
+      if (error) console.error("is_admin check failed:", error.message);
       setState(isAdmin === true ? { status: "in", email } : { status: "denied", email });
     };
 
     void resolve();
+    // Supabase holds an internal lock while this callback runs, so calling getSession()/rpc()
+    // inside it deadlocks (sign-in appears to hang). Defer the work to the next tick.
+    let timer: ReturnType<typeof setTimeout> | undefined;
     const { data: sub } = sb.auth.onAuthStateChange((event) => {
-      if (event === "SIGNED_IN" || event === "SIGNED_OUT" || event === "USER_UPDATED") void resolve();
+      if (event === "SIGNED_IN" || event === "SIGNED_OUT" || event === "USER_UPDATED") {
+        clearTimeout(timer);
+        timer = setTimeout(() => void resolve(), 0);
+      }
     });
     return () => {
       alive = false;
+      clearTimeout(timer);
       sub.subscription.unsubscribe();
     };
   }, []);
