@@ -397,7 +397,7 @@ export function ContactPage() {
     const form = event.currentTarget;
     const data = new FormData(form);
     const get = (key: string) => String(data.get(key) ?? "").trim();
-    if (get("website")) {
+    if (get("hp_trap_field")) {
       // Honeypot field filled in: a bot. Pretend it worked.
       setState("sent");
       return;
@@ -470,7 +470,7 @@ export function ContactPage() {
           </div>
 
           <form className="nm-form" onSubmit={onSubmit}>
-            <input aria-hidden="true" autoComplete="off" className="nm-form__hp" name="website" tabIndex={-1} type="text" />
+            <input aria-hidden="true" autoComplete="off" className="nm-form__hp" name="hp_trap_field" tabIndex={-1} type="text" />
             <div className="nm-form__row">
               <label>
                 <span>Name</span>
