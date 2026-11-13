@@ -319,8 +319,7 @@
 }
 
 .nma-content {
-  max-width: 82rem;
-  margin: 0 auto;
+  width: 100%;
   padding: clamp(1.25rem, 3vw, 2.5rem);
 }
 
@@ -1385,7 +1384,7 @@
 
 .nma-board {
   display: grid;
-  grid-template-columns: repeat(4, minmax(15rem, 1fr));
+  grid-template-columns: repeat(4, minmax(14rem, 1fr));
   gap: 1rem;
   align-items: start;
   overflow-x: auto;
