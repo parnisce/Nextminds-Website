@@ -19,9 +19,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <ToastCtx.Provider value={push}>
       {children}
-      <div aria-live="polite" className="ad-toasts">
+      <div aria-live="polite" className="nma-toasts">
         {toasts.map((t) => (
-          <div className={`ad-toast ad-toast--${t.tone}`} key={t.id} role="status">
+          <div className={`nma-toast nma-toast--${t.tone}`} key={t.id} role="status">
             {t.tone === "ok" ? <CheckCircle size={20} weight="fill" /> : <WarningCircle size={20} weight="fill" />}
             <span>{t.text}</span>
             <button aria-label="Dismiss" onClick={() => setToasts((x) => x.filter((y) => y.id !== t.id))} type="button">
@@ -37,19 +37,19 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 // ── Small building blocks ───────────────────────────────────────────────────
 export function PageHead({ title, sub, actions }: { title: string; sub?: string; actions?: ReactNode }) {
   return (
-    <div className="ad-pagehead">
+    <div className="nma-pagehead">
       <div>
         <h1>{title}</h1>
         {sub ? <p>{sub}</p> : null}
       </div>
-      {actions ? <div className="ad-pagehead__actions">{actions}</div> : null}
+      {actions ? <div className="nma-pagehead__actions">{actions}</div> : null}
     </div>
   );
 }
 
 export function Field({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {
   return (
-    <label className="ad-field">
+    <label className="nma-field">
       <span>{label}</span>
       {children}
       {hint ? <small>{hint}</small> : null}
@@ -66,7 +66,7 @@ export const statusLabel: Record<EnquiryStatus, string> = {
 
 export function StatusPill({ status }: { status: EnquiryStatus | "draft" | "published" }) {
   const text = status === "draft" ? "Draft" : status === "published" ? "Published" : statusLabel[status];
-  return <span className={`ad-pill ad-pill--${status}`}>{text}</span>;
+  return <span className={`nma-pill nma-pill--${status}`}>{text}</span>;
 }
 
 export function Confirm({
@@ -92,15 +92,15 @@ export function Confirm({
   }, [open, onCancel]);
   if (!open) return null;
   return (
-    <div className="ad-modal" onClick={onCancel} role="presentation">
-      <div aria-modal="true" className="ad-modal__card" onClick={(e) => e.stopPropagation()} role="alertdialog">
+    <div className="nma-modal" onClick={onCancel} role="presentation">
+      <div aria-modal="true" className="nma-modal__card" onClick={(e) => e.stopPropagation()} role="alertdialog">
         <h3>{title}</h3>
         <p>{text}</p>
-        <div className="ad-modal__actions">
-          <button className="ad-btn" onClick={onCancel} type="button">
+        <div className="nma-modal__actions">
+          <button className="nma-btn" onClick={onCancel} type="button">
             Cancel
           </button>
-          <button className="ad-btn ad-btn--danger" onClick={onConfirm} type="button">
+          <button className="nma-btn nma-btn--danger" onClick={onConfirm} type="button">
             {action}
           </button>
         </div>

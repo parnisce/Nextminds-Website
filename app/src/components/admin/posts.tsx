@@ -69,18 +69,18 @@ function Editor({ post, onClose }: { post: Post | null; onClose: () => void }) {
   const isLive = form.status === "published" && Boolean(form.id);
 
   return (
-    <div className="ad-card ad-editor">
-      <header className="ad-card__head">
+    <div className="nma-card nma-editor">
+      <header className="nma-card__head">
         <div>
           <h2>{form.id ? "Edit post" : "New post"}</h2>
           <p>{form.id ? <StatusPill status={form.status} /> : "Write it, save a draft, publish when ready."}</p>
         </div>
-        <button className="ad-btn ad-btn--ghost" onClick={onClose} type="button">
+        <button className="nma-btn nma-btn--ghost" onClick={onClose} type="button">
           Close
         </button>
       </header>
 
-      <div className="ad-stack">
+      <div className="nma-stack">
         <Field label="Title">
           <input
             onChange={(e) => patch({ title: e.target.value, ...(slugTouched ? {} : { slug: slugify(e.target.value) }) })}
@@ -101,21 +101,21 @@ function Editor({ post, onClose }: { post: Post | null; onClose: () => void }) {
           <textarea maxLength={300} onChange={(e) => patch({ excerpt: e.target.value })} rows={2} value={form.excerpt} />
         </Field>
 
-        <div className="ad-field">
+        <div className="nma-field">
           <span>Cover image</span>
-          <div className="ad-cover">
-            <div className="ad-cover__preview">
+          <div className="nma-cover">
+            <div className="nma-cover__preview">
               {form.cover_url ? <img alt="" src={form.cover_url} /> : <ImageSquare size={36} weight="duotone" />}
             </div>
-            <div className="ad-cover__side">
+            <div className="nma-cover__side">
               <input onChange={(e) => patch({ cover_url: e.target.value || null })} placeholder="Paste an image address, or upload one" value={form.cover_url ?? ""} />
-              <div className="ad-row-actions">
+              <div className="nma-row-actions">
                 <input accept="image/*" hidden onChange={(e) => e.target.files?.[0] && void upload(e.target.files[0])} ref={file} type="file" />
-                <button className="ad-btn" disabled={uploading} onClick={() => file.current?.click()} type="button">
+                <button className="nma-btn" disabled={uploading} onClick={() => file.current?.click()} type="button">
                   <UploadSimple size={16} /> {uploading ? "Uploading…" : "Upload image"}
                 </button>
                 {form.cover_url ? (
-                  <button className="ad-btn ad-btn--ghost" onClick={() => patch({ cover_url: null })} type="button">
+                  <button className="nma-btn nma-btn--ghost" onClick={() => patch({ cover_url: null })} type="button">
                     Remove
                   </button>
                 ) : null}
@@ -125,34 +125,34 @@ function Editor({ post, onClose }: { post: Post | null; onClose: () => void }) {
         </div>
 
         <Field hint={"Blank line = new paragraph. Start a line with “## ” for a heading, or “- ” for bullet points."} label="Article">
-          <textarea className="ad-article" onChange={(e) => patch({ content: e.target.value })} rows={16} value={form.content} />
+          <textarea className="nma-article" onChange={(e) => patch({ content: e.target.value })} rows={16} value={form.content} />
         </Field>
       </div>
 
-      <div className="ad-editor__foot">
+      <div className="nma-editor__foot">
         {form.id ? (
-          <button className="ad-btn ad-btn--ghost ad-btn--red" onClick={() => setConfirm(true)} type="button">
+          <button className="nma-btn nma-btn--ghost nma-btn--red" onClick={() => setConfirm(true)} type="button">
             <Trash size={16} /> Delete
           </button>
         ) : (
           <span />
         )}
-        <div className="ad-row-actions">
+        <div className="nma-row-actions">
           {isLive ? (
-            <a className="ad-btn" href={`/blog/${form.slug}`} rel="noreferrer" target="_blank">
+            <a className="nma-btn" href={`/blog/${form.slug}`} rel="noreferrer" target="_blank">
               <ArrowSquareOut size={16} /> View
             </a>
           ) : null}
           {form.status === "published" ? (
-            <button className="ad-btn" disabled={busy} onClick={() => void save("draft")} type="button">
+            <button className="nma-btn" disabled={busy} onClick={() => void save("draft")} type="button">
               Unpublish
             </button>
           ) : (
-            <button className="ad-btn" disabled={busy} onClick={() => void save("draft")} type="button">
+            <button className="nma-btn" disabled={busy} onClick={() => void save("draft")} type="button">
               <FloppyDisk size={16} /> Save draft
             </button>
           )}
-          <button className="ad-btn ad-btn--primary" disabled={busy} onClick={() => void save("published")} type="button">
+          <button className="nma-btn nma-btn--primary" disabled={busy} onClick={() => void save("published")} type="button">
             {form.status === "published" ? "Update post" : "Publish"}
           </button>
         </div>
@@ -198,7 +198,7 @@ export function PostsPage({ id, isNew }: { id?: string; isNew?: boolean }) {
     <>
       <PageHead
         actions={
-          <button className="ad-btn ad-btn--primary" onClick={() => void navigate({ to: "/admin/posts", search: { new: true } })} type="button">
+          <button className="nma-btn nma-btn--primary" onClick={() => void navigate({ to: "/admin/posts", search: { new: true } })} type="button">
             <Plus size={18} weight="bold" /> New post
           </button>
         }
@@ -208,13 +208,13 @@ export function PostsPage({ id, isNew }: { id?: string; isNew?: boolean }) {
 
       {editing ? <Editor key={selected?.id ?? "new"} onClose={close} post={selected} /> : null}
 
-      <div className="ad-card">
-        <div className="ad-toolbar">
-          <label className="ad-search">
+      <div className="nma-card">
+        <div className="nma-toolbar">
+          <label className="nma-search">
             <MagnifyingGlass size={18} />
             <input onChange={(e) => setQ(e.target.value)} placeholder="Search posts" value={q} />
           </label>
-          <div className="ad-chips">
+          <div className="nma-chips">
             {(["all", "published", "draft"] as const).map((f) => (
               <button className={filter === f ? "is-active" : ""} key={f} onClick={() => setFilter(f)} type="button">
                 {f === "all" ? "All" : f === "published" ? "Published" : "Drafts"}
@@ -225,16 +225,16 @@ export function PostsPage({ id, isNew }: { id?: string; isNew?: boolean }) {
         </div>
 
         {loading ? (
-          <p className="ad-empty">Loading…</p>
+          <p className="nma-empty">Loading…</p>
         ) : shown.length === 0 ? (
-          <p className="ad-empty">{posts.length === 0 ? "No posts yet. Click New post to write your first one." : "No posts match your search."}</p>
+          <p className="nma-empty">{posts.length === 0 ? "No posts yet. Click New post to write your first one." : "No posts match your search."}</p>
         ) : (
-          <ul className="ad-posts">
+          <ul className="nma-posts">
             {shown.map((p) => (
               <li className={p.id === id ? "is-selected" : ""} key={p.id}>
                 <button onClick={() => void navigate({ to: "/admin/posts", search: { id: p.id } })} type="button">
-                  <span className="ad-posts__img">{p.cover_url ? <img alt="" loading="lazy" src={p.cover_url} /> : <ImageSquare size={22} weight="duotone" />}</span>
-                  <span className="ad-list__main">
+                  <span className="nma-posts__img">{p.cover_url ? <img alt="" loading="lazy" src={p.cover_url} /> : <ImageSquare size={22} weight="duotone" />}</span>
+                  <span className="nma-list__main">
                     <b>{p.title}</b>
                     <small>{p.excerpt || "No summary"}</small>
                   </span>

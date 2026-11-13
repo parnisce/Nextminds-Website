@@ -38,7 +38,7 @@ export function ContentEditor() {
     };
   }, [loadHome]);
 
-  if (!draft) return <p className="ad-empty">Loading homepage content…</p>;
+  if (!draft) return <p className="nma-empty">Loading homepage content…</p>;
 
   const dirty = JSON.stringify(draft) !== saved.current;
   const set = (patch: Partial<HomeContent>) => setDraft({ ...draft, ...patch });
@@ -77,10 +77,10 @@ export function ContentEditor() {
       <PageHead
         actions={
           <>
-            <a className="ad-btn" href="/" rel="noreferrer" target="_blank">
+            <a className="nma-btn" href="/" rel="noreferrer" target="_blank">
               <ArrowSquareOut size={18} /> View site
             </a>
-            <button className="ad-btn ad-btn--primary" disabled={!dirty || busy} onClick={() => void save()} type="button">
+            <button className="nma-btn nma-btn--primary" disabled={!dirty || busy} onClick={() => void save()} type="button">
               <FloppyDisk size={18} /> {busy ? "Saving…" : dirty ? "Save changes" : "Saved"}
             </button>
           </>
@@ -89,7 +89,7 @@ export function ContentEditor() {
         title="Homepage content"
       />
 
-      <div className="ad-tabs" role="tablist">
+      <div className="nma-tabs" role="tablist">
         {tabs.map((t) => (
           <button aria-selected={tab === t.id} className={tab === t.id ? "is-active" : ""} key={t.id} onClick={() => setTab(t.id)} role="tab" type="button">
             {t.label}
@@ -97,21 +97,21 @@ export function ContentEditor() {
         ))}
       </div>
 
-      <div className="ad-card ad-editor">
-        <header className="ad-card__head">
+      <div className="nma-card nma-editor">
+        <header className="nma-card__head">
           <div>
             <h2>{tabs.find((t) => t.id === tab)?.label}</h2>
             <p>{tabs.find((t) => t.id === tab)?.hint}</p>
           </div>
-          <button className="ad-btn ad-btn--ghost" onClick={resetTab} type="button">
+          <button className="nma-btn nma-btn--ghost" onClick={resetTab} type="button">
             <ArrowCounterClockwise size={16} /> Reset section
           </button>
         </header>
 
         {tab === "hero" && (
-          <div className="ad-stack">
+          <div className="nma-stack">
             {draft.hero.map((h, i) => (
-              <fieldset className="ad-group" key={i}>
+              <fieldset className="nma-group" key={i}>
                 <legend>
                   Chapter {i + 1} · {heroNames[i]}
                 </legend>
@@ -130,8 +130,8 @@ export function ContentEditor() {
         )}
 
         {tab === "about" && (
-          <div className="ad-stack">
-            <fieldset className="ad-group">
+          <div className="nma-stack">
+            <fieldset className="nma-group">
               <legend>Intro paragraphs</legend>
               {draft.about.intro.map((p, i) => (
                 <Field key={i} label={`Paragraph ${i + 1}`}>
@@ -143,11 +143,11 @@ export function ContentEditor() {
                 </Field>
               ))}
             </fieldset>
-            <fieldset className="ad-group">
+            <fieldset className="nma-group">
               <legend>The four numbers</legend>
-              <div className="ad-cols">
+              <div className="nma-cols">
                 {draft.about.stats.map((s, i) => (
-                  <div className="ad-mini" key={i}>
+                  <div className="nma-mini" key={i}>
                     <Field label="Number">
                       <input
                         onChange={(e) => set({ about: { ...draft.about, stats: draft.about.stats.map((x, j) => (j === i ? { ...x, value: e.target.value } : x)) } })}
@@ -165,10 +165,10 @@ export function ContentEditor() {
                 ))}
               </div>
             </fieldset>
-            <fieldset className="ad-group">
+            <fieldset className="nma-group">
               <legend>The four values (scrolling list)</legend>
               {draft.about.values.map((v, i) => (
-                <div className="ad-mini" key={i}>
+                <div className="nma-mini" key={i}>
                   <Field label={`Value ${i + 1} title`}>
                     <input
                       onChange={(e) => set({ about: { ...draft.about, values: draft.about.values.map((x, j) => (j === i ? { ...x, title: e.target.value } : x)) } })}
@@ -189,9 +189,9 @@ export function ContentEditor() {
         )}
 
         {tab === "faqs" && (
-          <div className="ad-stack">
+          <div className="nma-stack">
             {draft.faqs.map((f, i) => (
-              <fieldset className="ad-group" key={i}>
+              <fieldset className="nma-group" key={i}>
                 <legend>Question {i + 1}</legend>
                 <Field label="Question">
                   <input onChange={(e) => set({ faqs: draft.faqs.map((x, j) => (j === i ? { ...x, q: e.target.value } : x)) })} value={f.q} />
@@ -199,34 +199,34 @@ export function ContentEditor() {
                 <Field label="Answer">
                   <textarea onChange={(e) => set({ faqs: draft.faqs.map((x, j) => (j === i ? { ...x, a: e.target.value } : x)) })} rows={3} value={f.a} />
                 </Field>
-                <div className="ad-row-actions">
-                  <button className="ad-btn ad-btn--ghost" disabled={i === 0} onClick={() => set({ faqs: move(draft.faqs, i, i - 1) })} type="button">
+                <div className="nma-row-actions">
+                  <button className="nma-btn nma-btn--ghost" disabled={i === 0} onClick={() => set({ faqs: move(draft.faqs, i, i - 1) })} type="button">
                     Move up
                   </button>
-                  <button className="ad-btn ad-btn--ghost" disabled={i === draft.faqs.length - 1} onClick={() => set({ faqs: move(draft.faqs, i, i + 1) })} type="button">
+                  <button className="nma-btn nma-btn--ghost" disabled={i === draft.faqs.length - 1} onClick={() => set({ faqs: move(draft.faqs, i, i + 1) })} type="button">
                     Move down
                   </button>
-                  <button className="ad-btn ad-btn--ghost ad-btn--red" disabled={draft.faqs.length <= 1} onClick={() => set({ faqs: draft.faqs.filter((_, j) => j !== i) })} type="button">
+                  <button className="nma-btn nma-btn--ghost nma-btn--red" disabled={draft.faqs.length <= 1} onClick={() => set({ faqs: draft.faqs.filter((_, j) => j !== i) })} type="button">
                     <Trash size={16} /> Remove
                   </button>
                 </div>
               </fieldset>
             ))}
-            <button className="ad-btn" onClick={() => set({ faqs: [...draft.faqs, { q: "", a: "" }] })} type="button">
+            <button className="nma-btn" onClick={() => set({ faqs: [...draft.faqs, { q: "", a: "" }] })} type="button">
               <Plus size={16} weight="bold" /> Add a question
             </button>
           </div>
         )}
 
         {tab === "testimonials" && (
-          <div className="ad-stack">
+          <div className="nma-stack">
             {draft.testimonials.map((t, i) => (
-              <fieldset className="ad-group" key={i}>
+              <fieldset className="nma-group" key={i}>
                 <legend>Testimonial {i + 1}</legend>
                 <Field label="Quote">
                   <textarea onChange={(e) => set({ testimonials: draft.testimonials.map((x, j) => (j === i ? { ...x, quote: e.target.value } : x)) })} rows={3} value={t.quote} />
                 </Field>
-                <div className="ad-cols ad-cols--2">
+                <div className="nma-cols nma-cols--2">
                   <Field label="Name">
                     <input onChange={(e) => set({ testimonials: draft.testimonials.map((x, j) => (j === i ? { ...x, name: e.target.value } : x)) })} value={t.name} />
                   </Field>
@@ -234,25 +234,25 @@ export function ContentEditor() {
                     <input onChange={(e) => set({ testimonials: draft.testimonials.map((x, j) => (j === i ? { ...x, role: e.target.value } : x)) })} value={t.role} />
                   </Field>
                 </div>
-                <div className="ad-row-actions">
-                  <button className="ad-btn ad-btn--ghost ad-btn--red" disabled={draft.testimonials.length <= 1} onClick={() => set({ testimonials: draft.testimonials.filter((_, j) => j !== i) })} type="button">
+                <div className="nma-row-actions">
+                  <button className="nma-btn nma-btn--ghost nma-btn--red" disabled={draft.testimonials.length <= 1} onClick={() => set({ testimonials: draft.testimonials.filter((_, j) => j !== i) })} type="button">
                     <Trash size={16} /> Remove
                   </button>
                 </div>
               </fieldset>
             ))}
-            <button className="ad-btn" onClick={() => set({ testimonials: [...draft.testimonials, { quote: "", name: "", role: "" }] })} type="button">
+            <button className="nma-btn" onClick={() => set({ testimonials: [...draft.testimonials, { quote: "", name: "", role: "" }] })} type="button">
               <Plus size={16} weight="bold" /> Add a testimonial
             </button>
           </div>
         )}
 
         {tab === "cta" && (
-          <div className="ad-stack">
+          <div className="nma-stack">
             <Field label="Badge text">
               <input onChange={(e) => set({ cta: { ...draft.cta, badge: e.target.value } })} value={draft.cta.badge} />
             </Field>
-            <div className="ad-cols ad-cols--2">
+            <div className="nma-cols nma-cols--2">
               <Field label="Headline">
                 <input onChange={(e) => set({ cta: { ...draft.cta, title: e.target.value } })} value={draft.cta.title} />
               </Field>
@@ -268,9 +268,9 @@ export function ContentEditor() {
       </div>
 
       {dirty ? (
-        <div className="ad-savebar" role="status">
+        <div className="nma-savebar" role="status">
           <span>You have unsaved changes</span>
-          <button className="ad-btn ad-btn--primary" disabled={busy} onClick={() => void save()} type="button">
+          <button className="nma-btn nma-btn--primary" disabled={busy} onClick={() => void save()} type="button">
             <FloppyDisk size={18} /> {busy ? "Saving…" : "Save changes"}
           </button>
         </div>

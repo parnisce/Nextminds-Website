@@ -37,24 +37,24 @@ function Detail({ q, onClose }: { q: Enquiry; onClose: () => void }) {
   const reply = `mailto:${q.email}?subject=${encodeURIComponent(`Re: your enquiry to NextMinds${q.service ? ` (${q.service})` : ""}`)}&body=${encodeURIComponent(`Hi ${q.name.split(" ")[0]},\n\nThank you for getting in touch.\n\n`)}`;
 
   return (
-    <aside className="ad-detail ad-card">
-      <header className="ad-detail__head">
-        <span className="ad-avatar ad-avatar--lg">{initials(q.name)}</span>
+    <aside className="nma-detail nma-card">
+      <header className="nma-detail__head">
+        <span className="nma-avatar nma-avatar--lg">{initials(q.name)}</span>
         <div>
           <h2>{q.name}</h2>
           <p>{new Date(q.created_at).toLocaleString("en-CA", { dateStyle: "medium", timeStyle: "short" })}</p>
         </div>
-        <button aria-label="Close" className="ad-iconbtn" onClick={onClose} type="button">
+        <button aria-label="Close" className="nma-iconbtn" onClick={onClose} type="button">
           <X size={18} />
         </button>
       </header>
 
-      <div className="ad-detail__meta">
+      <div className="nma-detail__meta">
         <StatusPill status={q.status} />
-        {q.service ? <span className="ad-tag">{q.service}</span> : null}
+        {q.service ? <span className="nma-tag">{q.service}</span> : null}
       </div>
 
-      <dl className="ad-detail__facts">
+      <dl className="nma-detail__facts">
         <div>
           <dt>
             <EnvelopeSimple size={16} /> Email
@@ -75,31 +75,31 @@ function Detail({ q, onClose }: { q: Enquiry; onClose: () => void }) {
         ) : null}
       </dl>
 
-      <div className="ad-detail__msg">
+      <div className="nma-detail__msg">
         <small>Message</small>
         <p>{q.message}</p>
       </div>
 
-      <div className="ad-detail__actions">
-        <a className="ad-btn ad-btn--primary" href={reply} onClick={() => q.status !== "replied" && void mark("replied")}>
+      <div className="nma-detail__actions">
+        <a className="nma-btn nma-btn--primary" href={reply} onClick={() => q.status !== "replied" && void mark("replied")}>
           <ArrowBendUpLeft size={18} /> Reply by email
         </a>
         {q.status !== "replied" ? (
-          <button className="ad-btn" onClick={() => void mark("replied")} type="button">
+          <button className="nma-btn" onClick={() => void mark("replied")} type="button">
             Mark replied
           </button>
         ) : null}
         {q.status !== "new" ? (
-          <button className="ad-btn" onClick={() => void mark("new")} type="button">
+          <button className="nma-btn" onClick={() => void mark("new")} type="button">
             Mark unread
           </button>
         ) : null}
         {q.status !== "archived" ? (
-          <button className="ad-btn" onClick={() => void mark("archived")} type="button">
+          <button className="nma-btn" onClick={() => void mark("archived")} type="button">
             <Archive size={16} /> Archive
           </button>
         ) : null}
-        <button className="ad-btn ad-btn--ghost ad-btn--red" onClick={() => setConfirm(true)} type="button">
+        <button className="nma-btn nma-btn--ghost nma-btn--red" onClick={() => setConfirm(true)} type="button">
           <Trash size={16} /> Delete
         </button>
       </div>
@@ -159,7 +159,7 @@ export function EnquiriesPage({ id }: { id?: string }) {
     <>
       <PageHead
         actions={
-          <button className="ad-btn" disabled={enquiries.length === 0} onClick={() => exportCsv(enquiries)} type="button">
+          <button className="nma-btn" disabled={enquiries.length === 0} onClick={() => exportCsv(enquiries)} type="button">
             <DownloadSimple size={18} /> Export CSV
           </button>
         }
@@ -167,14 +167,14 @@ export function EnquiriesPage({ id }: { id?: string }) {
         title="Enquiries"
       />
 
-      <div className={`ad-split ${selected ? "has-detail" : ""}`}>
-        <div className="ad-card ad-split__list">
-          <div className="ad-toolbar">
-            <label className="ad-search">
+      <div className={`nma-split ${selected ? "has-detail" : ""}`}>
+        <div className="nma-card nma-split__list">
+          <div className="nma-toolbar">
+            <label className="nma-search">
               <MagnifyingGlass size={18} />
               <input onChange={(e) => setQ(e.target.value)} placeholder="Search name, email or message" value={q} />
             </label>
-            <div className="ad-chips">
+            <div className="nma-chips">
               {filters.map((f) => (
                 <button className={filter === f ? "is-active" : ""} key={f} onClick={() => setFilter(f)} type="button">
                   {f === "all" ? "Inbox" : statusLabel[f]}
@@ -185,23 +185,23 @@ export function EnquiriesPage({ id }: { id?: string }) {
           </div>
 
           {loading ? (
-            <p className="ad-empty">Loading…</p>
+            <p className="nma-empty">Loading…</p>
           ) : shown.length === 0 ? (
-            <div className="ad-empty ad-empty--big">
+            <div className="nma-empty nma-empty--big">
               <Tray size={44} weight="duotone" />
               <p>{enquiries.length === 0 ? "No enquiries yet. Messages from your Contact page will land here." : "Nothing matches this view."}</p>
             </div>
           ) : (
-            <ul className="ad-inbox">
+            <ul className="nma-inbox">
               {shown.map((e) => (
                 <li className={`${e.id === id ? "is-selected" : ""} ${e.status === "new" ? "is-new" : ""}`} key={e.id}>
                   <button onClick={() => open(e.id)} type="button">
-                    <span className="ad-avatar">{initials(e.name)}</span>
-                    <span className="ad-list__main">
+                    <span className="nma-avatar">{initials(e.name)}</span>
+                    <span className="nma-list__main">
                       <b>{e.name}</b>
                       <small>{e.message}</small>
                     </span>
-                    <span className="ad-inbox__side">
+                    <span className="nma-inbox__side">
                       <time>{timeAgo(e.created_at)}</time>
                       {e.service ? <em>{e.service}</em> : null}
                     </span>

@@ -36,11 +36,11 @@ function Stat({
   to: string;
 }) {
   return (
-    <Link className={`ad-stat ad-stat--${tone}`} to={to}>
-      <span className="ad-stat__icon">
+    <Link className={`nma-stat nma-stat--${tone}`} to={to}>
+      <span className="nma-stat__icon">
         <Icon size={24} weight="duotone" />
       </span>
-      <span className="ad-stat__body">
+      <span className="nma-stat__body">
         <small>{label}</small>
         <b>{value}</b>
         <em>{note}</em>
@@ -107,10 +107,10 @@ export function Dashboard() {
       <PageHead
         actions={
           <>
-            <Link className="ad-btn" to="/admin/content">
+            <Link className="nma-btn" to="/admin/content">
               <PencilRuler size={18} /> Edit homepage
             </Link>
-            <Link className="ad-btn ad-btn--primary" search={{ new: true }} to="/admin/posts">
+            <Link className="nma-btn nma-btn--primary" search={{ new: true }} to="/admin/posts">
               <Plus size={18} weight="bold" /> New post
             </Link>
           </>
@@ -119,7 +119,7 @@ export function Dashboard() {
         title={`${greeting()}, ${name}`}
       />
 
-      <div className="ad-stats">
+      <div className="nma-stats">
         <Stat icon={EnvelopeSimple} label="New enquiries" note={stats.fresh ? "Waiting for a reply" : "All caught up"} tone="blue" to="/admin/enquiries" value={stats.fresh} />
         <Stat
           icon={TrendUp}
@@ -133,15 +133,15 @@ export function Dashboard() {
         <Stat icon={EnvelopeSimpleOpen} label="All-time enquiries" note="Since you started tracking" tone="violet" to="/admin/enquiries" value={stats.total} />
       </div>
 
-      <div className="ad-grid">
-        <section className="ad-card ad-card--wide">
-          <header className="ad-card__head">
+      <div className="nma-grid">
+        <section className="nma-card nma-card--wide">
+          <header className="nma-card__head">
             <div>
               <h2>Enquiries, last 30 days</h2>
               <p>Messages sent through your Contact page</p>
             </div>
           </header>
-          <div className="ad-chart">
+          <div className="nma-chart">
             <ResponsiveContainer height="100%" width="100%">
               <AreaChart data={series} margin={{ top: 8, right: 8, left: -18, bottom: 0 }}>
                 <defs>
@@ -164,17 +164,17 @@ export function Dashboard() {
           </div>
         </section>
 
-        <section className="ad-card">
-          <header className="ad-card__head">
+        <section className="nma-card">
+          <header className="nma-card__head">
             <div>
               <h2>Interest by service</h2>
               <p>What visitors ask about</p>
             </div>
           </header>
           {byService.length === 0 ? (
-            <p className="ad-empty">No enquiries yet.</p>
+            <p className="nma-empty">No enquiries yet.</p>
           ) : (
-            <div className="ad-chart ad-chart--bars">
+            <div className="nma-chart nma-chart--bars">
               <ResponsiveContainer height="100%" width="100%">
                 <BarChart data={byService} layout="vertical" margin={{ top: 0, right: 16, left: 0, bottom: 0 }}>
                   <XAxis hide type="number" />
@@ -194,27 +194,27 @@ export function Dashboard() {
           )}
         </section>
 
-        <section className="ad-card ad-card--wide">
-          <header className="ad-card__head">
+        <section className="nma-card nma-card--wide">
+          <header className="nma-card__head">
             <div>
               <h2>Latest enquiries</h2>
               <p>The six most recent messages</p>
             </div>
-            <Link className="ad-link" to="/admin/enquiries">
+            <Link className="nma-link" to="/admin/enquiries">
               View all <ArrowRight size={14} />
             </Link>
           </header>
           {loading ? (
-            <p className="ad-empty">Loading…</p>
+            <p className="nma-empty">Loading…</p>
           ) : recent.length === 0 ? (
-            <p className="ad-empty">No enquiries yet. They will appear here as soon as someone uses your Contact page.</p>
+            <p className="nma-empty">No enquiries yet. They will appear here as soon as someone uses your Contact page.</p>
           ) : (
-            <ul className="ad-list">
+            <ul className="nma-list">
               {recent.map((q) => (
                 <li key={q.id}>
                   <Link search={{ id: q.id }} to="/admin/enquiries">
-                    <span className="ad-avatar">{initials(q.name)}</span>
-                    <span className="ad-list__main">
+                    <span className="nma-avatar">{initials(q.name)}</span>
+                    <span className="nma-list__main">
                       <b>{q.name}</b>
                       <small>{q.service || q.message.slice(0, 60)}</small>
                     </span>
@@ -227,24 +227,24 @@ export function Dashboard() {
           )}
         </section>
 
-        <section className="ad-card">
-          <header className="ad-card__head">
+        <section className="nma-card">
+          <header className="nma-card__head">
             <div>
               <h2>Blog</h2>
               <p>Recent posts</p>
             </div>
-            <Link className="ad-link" to="/admin/posts">
+            <Link className="nma-link" to="/admin/posts">
               Manage <ArrowRight size={14} />
             </Link>
           </header>
           {latestPosts.length === 0 ? (
-            <p className="ad-empty">No posts yet. Write your first one.</p>
+            <p className="nma-empty">No posts yet. Write your first one.</p>
           ) : (
-            <ul className="ad-list">
+            <ul className="nma-list">
               {latestPosts.map((p) => (
                 <li key={p.id}>
                   <Link search={{ id: p.id }} to="/admin/posts">
-                    <span className="ad-list__main">
+                    <span className="nma-list__main">
                       <b>{p.title}</b>
                       <small>{formatDate(p.published_at ?? p.created_at)}</small>
                     </span>

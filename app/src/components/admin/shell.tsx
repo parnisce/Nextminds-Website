@@ -28,17 +28,17 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
   const fresh = enquiries.filter((q) => q.status === "new").length;
 
   return (
-    <aside className={`ad-side ${open ? "is-open" : ""}`}>
-      <div className="ad-side__top">
-        <Link className="ad-side__logo" onClick={onClose} to="/admin">
+    <aside className={`nma-side ${open ? "is-open" : ""}`}>
+      <div className="nma-side__top">
+        <Link className="nma-side__logo" onClick={onClose} to="/admin">
           <img alt="NextMinds" height={40} src="/assets/brand/logo.png" width={154} />
         </Link>
-        <button aria-label="Close menu" className="ad-iconbtn ad-side__close" onClick={onClose} type="button">
+        <button aria-label="Close menu" className="nma-iconbtn nma-side__close" onClick={onClose} type="button">
           <X size={20} />
         </button>
       </div>
-      <p className="ad-side__label">Manage</p>
-      <nav className="ad-side__nav">
+      <p className="nma-side__label">Manage</p>
+      <nav className="nma-side__nav">
         {nav.map(({ to, label, icon: Icon, ...rest }) => {
           const exact = "exact" in rest && rest.exact;
           const active = exact ? path === to || path === `${to}/` : path.startsWith(to);
@@ -46,23 +46,23 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
             <Link className={active ? "is-active" : ""} key={to} onClick={onClose} to={to}>
               <Icon aria-hidden size={20} weight={active ? "fill" : "duotone"} />
               <span>{label}</span>
-              {to === "/admin/enquiries" && fresh > 0 ? <b className="ad-badge">{fresh}</b> : null}
+              {to === "/admin/enquiries" && fresh > 0 ? <b className="nma-badge">{fresh}</b> : null}
             </Link>
           );
         })}
       </nav>
-      <div className="ad-side__foot">
-        <a className="ad-side__view" href="/" rel="noreferrer" target="_blank">
+      <div className="nma-side__foot">
+        <a className="nma-side__view" href="/" rel="noreferrer" target="_blank">
           <ArrowSquareOut size={18} />
           View live site
         </a>
-        <div className="ad-user">
-          <span className="ad-avatar">{initials(email.split("@")[0] ?? "A")}</span>
-          <span className="ad-user__id">
+        <div className="nma-user">
+          <span className="nma-avatar">{initials(email.split("@")[0] ?? "A")}</span>
+          <span className="nma-user__id">
             <b>Admin</b>
             <small>{email}</small>
           </span>
-          <button aria-label="Sign out" className="ad-iconbtn" onClick={() => void signOut()} title="Sign out" type="button">
+          <button aria-label="Sign out" className="nma-iconbtn" onClick={() => void signOut()} title="Sign out" type="button">
             <SignOut size={18} />
           </button>
         </div>
@@ -75,19 +75,19 @@ function Frame() {
   const [open, setOpen] = useState(false);
   const { error } = useAdminData();
   return (
-    <div className="ad-app">
+    <div className="nma-app">
       <Sidebar onClose={() => setOpen(false)} open={open} />
-      {open ? <div className="ad-scrim" onClick={() => setOpen(false)} /> : null}
-      <div className="ad-main">
-        <header className="ad-topbar">
-          <button aria-label="Open menu" className="ad-iconbtn" onClick={() => setOpen(true)} type="button">
+      {open ? <div className="nma-scrim" onClick={() => setOpen(false)} /> : null}
+      <div className="nma-main">
+        <header className="nma-topbar">
+          <button aria-label="Open menu" className="nma-iconbtn" onClick={() => setOpen(true)} type="button">
             <List size={22} />
           </button>
           <img alt="NextMinds" height={30} src="/assets/brand/logo.png" width={115} />
         </header>
-        <main className="ad-content">
+        <main className="nma-content">
           {error ? (
-            <div className="ad-alert" role="alert">
+            <div className="nma-alert" role="alert">
               <b>Database not ready.</b> {error}
             </div>
           ) : null}
@@ -100,8 +100,8 @@ function Frame() {
 
 function Gate({ title, text, children }: { title: string; text: string; children?: React.ReactNode }) {
   return (
-    <div className="ad-gate">
-      <div className="ad-gate__card">
+    <div className="nma-gate">
+      <div className="nma-gate__card">
         <img alt="NextMinds" height={44} src="/assets/brand/logo.png" width={169} />
         <h1>{title}</h1>
         <p>{text}</p>
@@ -125,19 +125,19 @@ export function AdminLayout() {
 
   if (auth.status === "loading" || auth.status === "out") {
     return (
-      <div className="ad-root">
+      <div className="nma-root">
         <Gate text="Checking your session…" title="One moment" />
       </div>
     );
   }
   if (auth.status === "denied") {
     return (
-      <div className="ad-root">
+      <div className="nma-root">
         <Gate
           text={`${auth.email} is signed in, but isn't on the admin list. Add this email to the admins table in Supabase, or sign in with another account.`}
           title="No admin access"
         >
-          <button className="ad-btn ad-btn--primary" onClick={() => void signOut()} type="button">
+          <button className="nma-btn nma-btn--primary" onClick={() => void signOut()} type="button">
             Sign out
           </button>
         </Gate>
@@ -145,7 +145,7 @@ export function AdminLayout() {
     );
   }
   return (
-    <div className="ad-root">
+    <div className="nma-root">
       <ToastProvider>
         <AdminDataProvider demo={demo} email={auth.email}>
           <Frame />

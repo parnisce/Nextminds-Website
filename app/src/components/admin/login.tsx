@@ -34,10 +34,10 @@ export function LoginPage() {
   };
 
   return (
-    <div className="ad-root ad-login">
-      <div aria-hidden="true" className="ad-login__glow" />
-      <div className="ad-login__panel">
-        <aside className="ad-login__brand">
+    <div className="nma-root nma-login">
+      <div aria-hidden="true" className="nma-login__glow" />
+      <div className="nma-login__panel">
+        <aside className="nma-login__brand">
           <img alt="NextMinds" height={46} src="/assets/brand/logo.png" width={177} />
           <h2>
             Run your website <span>from one place.</span>
@@ -55,29 +55,29 @@ export function LoginPage() {
           </ul>
         </aside>
 
-        <form className="ad-login__form" onSubmit={onSubmit}>
-          <span className="ad-login__icon">
+        <form className="nma-login__form" onSubmit={onSubmit}>
+          <span className="nma-login__icon">
             <LockKey size={26} weight="duotone" />
           </span>
           <h1>Admin sign in</h1>
           <p>Use the account you set up for this site.</p>
 
           {auth.status === "denied" ? (
-            <div className="ad-alert" role="alert">
+            <div className="nma-alert" role="alert">
               <b>{auth.email}</b> is signed in but isn&rsquo;t an admin.{" "}
-              <button className="ad-link" onClick={() => void signOut()} type="button">
+              <button className="nma-link" onClick={() => void signOut()} type="button">
                 Sign out
               </button>
             </div>
           ) : null}
 
-          <label className="ad-field">
+          <label className="nma-field">
             <span>Email</span>
             <input autoComplete="username" onChange={(e) => setEmail(e.target.value)} placeholder="you@company.com" required type="email" value={email} />
           </label>
-          <label className="ad-field">
+          <label className="nma-field">
             <span>Password</span>
-            <div className="ad-pw">
+            <div className="nma-pw">
               <input autoComplete="current-password" onChange={(e) => setPassword(e.target.value)} placeholder="Your password" required type={show ? "text" : "password"} value={password} />
               <button aria-label={show ? "Hide password" : "Show password"} onClick={() => setShow((s) => !s)} type="button">
                 {show ? <EyeSlash size={18} /> : <Eye size={18} />}
@@ -86,15 +86,15 @@ export function LoginPage() {
           </label>
 
           {error ? (
-            <p className="ad-formerror" role="alert">
+            <p className="nma-formerror" role="alert">
               {error}
             </p>
           ) : null}
 
-          <button className="ad-btn ad-btn--primary ad-btn--block" disabled={busy} type="submit">
+          <button className="nma-btn nma-btn--primary nma-btn--block" disabled={busy} type="submit">
             {busy ? "Signing in…" : "Sign in"}
           </button>
-          <Link className="ad-login__back" to="/">
+          <Link className="nma-login__back" to="/">
             <ArrowLeft size={16} /> Back to website
           </Link>
         </form>
