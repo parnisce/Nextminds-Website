@@ -18,8 +18,10 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
 import { Route as AdminContentRouteImport } from './routes/admin.content'
 import { Route as AdminEnquiriesRouteImport } from './routes/admin.enquiries'
+import { Route as AdminInsightsRouteImport } from './routes/admin.insights'
 import { Route as AdminPostsRouteImport } from './routes/admin.posts'
 import { Route as AdminTasksRouteImport } from './routes/admin.tasks'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
@@ -70,6 +72,11 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminContentRoute = AdminContentRouteImport.update({
   id: '/content',
   path: '/content',
@@ -78,6 +85,11 @@ const AdminContentRoute = AdminContentRouteImport.update({
 const AdminEnquiriesRoute = AdminEnquiriesRouteImport.update({
   id: '/enquiries',
   path: '/enquiries',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminInsightsRoute = AdminInsightsRouteImport.update({
+  id: '/insights',
+  path: '/insights',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminPostsRoute = AdminPostsRouteImport.update({
@@ -110,8 +122,10 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/content': typeof AdminContentRoute
   '/admin/enquiries': typeof AdminEnquiriesRoute
+  '/admin/insights': typeof AdminInsightsRoute
   '/admin/posts': typeof AdminPostsRoute
   '/admin/tasks': typeof AdminTasksRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -126,8 +140,10 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/content': typeof AdminContentRoute
   '/admin/enquiries': typeof AdminEnquiriesRoute
+  '/admin/insights': typeof AdminInsightsRoute
   '/admin/posts': typeof AdminPostsRoute
   '/admin/tasks': typeof AdminTasksRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -144,8 +160,10 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/content': typeof AdminContentRoute
   '/admin/enquiries': typeof AdminEnquiriesRoute
+  '/admin/insights': typeof AdminInsightsRoute
   '/admin/posts': typeof AdminPostsRoute
   '/admin/tasks': typeof AdminTasksRoute
   '/blog/$slug': typeof BlogSlugRoute
@@ -163,8 +181,10 @@ export interface FileRouteTypes {
     | '/login'
     | '/robots.txt'
     | '/sitemap.xml'
+    | '/admin/analytics'
     | '/admin/content'
     | '/admin/enquiries'
+    | '/admin/insights'
     | '/admin/posts'
     | '/admin/tasks'
     | '/blog/$slug'
@@ -179,8 +199,10 @@ export interface FileRouteTypes {
     | '/login'
     | '/robots.txt'
     | '/sitemap.xml'
+    | '/admin/analytics'
     | '/admin/content'
     | '/admin/enquiries'
+    | '/admin/insights'
     | '/admin/posts'
     | '/admin/tasks'
     | '/blog/$slug'
@@ -196,8 +218,10 @@ export interface FileRouteTypes {
     | '/login'
     | '/robots.txt'
     | '/sitemap.xml'
+    | '/admin/analytics'
     | '/admin/content'
     | '/admin/enquiries'
+    | '/admin/insights'
     | '/admin/posts'
     | '/admin/tasks'
     | '/blog/$slug'
@@ -282,6 +306,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/analytics': {
+      id: '/admin/analytics'
+      path: '/analytics'
+      fullPath: '/admin/analytics'
+      preLoaderRoute: typeof AdminAnalyticsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/content': {
       id: '/admin/content'
       path: '/content'
@@ -294,6 +325,13 @@ declare module '@tanstack/react-router' {
       path: '/enquiries'
       fullPath: '/admin/enquiries'
       preLoaderRoute: typeof AdminEnquiriesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/insights': {
+      id: '/admin/insights'
+      path: '/insights'
+      fullPath: '/admin/insights'
+      preLoaderRoute: typeof AdminInsightsRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/posts': {
@@ -328,16 +366,20 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteChildren {
+  AdminAnalyticsRoute: typeof AdminAnalyticsRoute
   AdminContentRoute: typeof AdminContentRoute
   AdminEnquiriesRoute: typeof AdminEnquiriesRoute
+  AdminInsightsRoute: typeof AdminInsightsRoute
   AdminPostsRoute: typeof AdminPostsRoute
   AdminTasksRoute: typeof AdminTasksRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminAnalyticsRoute: AdminAnalyticsRoute,
   AdminContentRoute: AdminContentRoute,
   AdminEnquiriesRoute: AdminEnquiriesRoute,
+  AdminInsightsRoute: AdminInsightsRoute,
   AdminPostsRoute: AdminPostsRoute,
   AdminTasksRoute: AdminTasksRoute,
   AdminIndexRoute: AdminIndexRoute,

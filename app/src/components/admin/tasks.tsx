@@ -344,7 +344,7 @@ function Summary({ tasks, now }: { tasks: Task[]; now: number }) {
 }
 
 export function TasksPage() {
-  const { tasks, tasksReady, loading, updateTask } = useAdminData();
+  const { tasks, tasksReady, loading, updateTask, logTime } = useAdminData();
   const toast = useToast();
   const [view, setView] = useState<"board" | "list">("board");
   const [modal, setModal] = useState<{ task: Task | null; status: TaskStatus } | null>(null);
@@ -392,10 +392,21 @@ export function TasksPage() {
 
   const fail = (e: unknown) => toast(e instanceof Error ? e.message : "Could not update the task.", "err");
 
+  // A finished timer run becomes a Work entry in Insights (ignored quietly if Insights isn't set up).
+  const autoLog = (t: Task, at: number) => {
+    if (!t.timer_started_at) return;
+    const minutes = Math.round((at - new Date(t.timer_started_at).getTime()) / 60000);
+    if (minutes < 1) return;
+    const d = new Date(at);
+    const day = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    void logTime({ day, category: "work", minutes: Math.min(minutes, 1440), note: t.title, task_id: t.id }).catch(() => undefined);
+  };
+
   const toggleTimer = (t: Task) => {
     const at = Date.now();
     setNow(at);
     if (t.timer_started_at) {
+      autoLog(t, at);
       void updateTask(t.id, { time_seconds: elapsed(t, at), timer_started_at: null }).catch(fail);
     } else {
       void updateTask(t.id, { timer_started_at: new Date(at).toISOString() }).catch(fail);
@@ -408,6 +419,7 @@ export function TasksPage() {
     const patch: Parameters<typeof updateTask>[1] = { status };
     // Finishing a task stops its timer and keeps the time.
     if (status === "done" && t.timer_started_at) {
+      autoLog(t, Date.now());
       patch.time_seconds = elapsed(t, Date.now());
       patch.timer_started_at = null;
     }

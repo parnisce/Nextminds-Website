@@ -86,6 +86,20 @@ export type Task = {
 
 export type TaskInput = Partial<Omit<Task, "id" | "created_at" | "updated_at">> & { title: string };
 
+export type TimeCategory = "work" | "side" | "social" | "rest";
+
+export type TimeEntry = {
+  id: string;
+  day: string;
+  category: TimeCategory;
+  minutes: number;
+  note: string;
+  task_id: string | null;
+  created_at: string;
+};
+
+export type TimeEntryInput = { day: string; category: TimeCategory; minutes: number; note?: string; task_id?: string | null };
+
 export type PostInput = {
   id?: string;
   slug: string;
@@ -103,6 +117,9 @@ type AdminData = {
   posts: Post[];
   tasks: Task[];
   tasksReady: boolean;
+  entries: TimeEntry[];
+  entriesReady: boolean;
+  demo: boolean;
   loading: boolean;
   error: string | null;
   reload: () => Promise<void>;
@@ -113,6 +130,8 @@ type AdminData = {
   createTask: (input: TaskInput) => Promise<void>;
   updateTask: (id: string, patch: Partial<TaskInput>) => Promise<void>;
   deleteTask: (id: string) => Promise<void>;
+  logTime: (input: TimeEntryInput) => Promise<void>;
+  deleteTimeEntry: (id: string) => Promise<void>;
   loadHome: () => Promise<HomeContent>;
   saveHome: (content: HomeContent) => Promise<void>;
 };
@@ -126,7 +145,7 @@ export function useAdminData() {
 }
 
 // Dev-only sample data so the dashboard can be previewed without a database (/admin?demo).
-function demoData(): { enquiries: Enquiry[]; posts: Post[]; tasks: Task[] } {
+function demoData(): { enquiries: Enquiry[]; posts: Post[]; tasks: Task[]; entries: TimeEntry[] } {
   const names = ["Ava Thompson", "Marcus Lee", "Priya Patel", "Jordan Blake", "Sofia Rossi", "Noah Campbell", "Mia Fortin", "Liam O’Neil", "Zoe Martin", "Ethan Park"];
   const services = ["AI Agents Development", "Digital Agency", "Real Estate Media", "E-Commerce Services", "Media Production", "Online Education"];
   const statuses: Enquiry["status"][] = ["new", "new", "read", "replied", "read", "new", "replied", "archived", "read", "new"];
@@ -165,7 +184,17 @@ function demoData(): { enquiries: Enquiry[]; posts: Post[]; tasks: Task[] } {
     mk(3, { title: "Deploy the site", status: "done", priority: "high", estimate_minutes: 60, time_seconds: 3000, description: "Pick a host, run the production build and point the domain at it.", checklist: [{ text: "Build", done: true }, { text: "DNS", done: true }] }),
     mk(4, { title: "Build the contact form", status: "done", priority: "high", time_seconds: 5700 }),
   ];
-  return { enquiries, posts, tasks };
+  const cats: TimeCategory[] = ["work", "work", "side", "social", "rest"];
+  const entries: TimeEntry[] = [];
+  for (let i = 0; i < 120; i++) {
+    if ((i * 7 + 3) % 5 === 0) continue;
+    const d = new Date(Date.now() - i * 86400000);
+    const day = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+    for (let k = 0; k < 1 + (i % 3); k++) {
+      entries.push({ id: `e-${i}-${k}`, day, category: cats[(i + k * 2) % cats.length]!, minutes: 30 + ((i * 37 + k * 53) % 240), note: k === 0 ? "Website work" : "", task_id: null, created_at: d.toISOString() });
+    }
+  }
+  return { enquiries, posts, tasks, entries };
 }
 
 export function AdminDataProvider({ email, demo, children }: { email: string; demo?: boolean; children: ReactNode }) {
@@ -174,6 +203,8 @@ export function AdminDataProvider({ email, demo, children }: { email: string; de
   const [posts, setPosts] = useState<Post[]>(seed?.posts ?? []);
   const [tasks, setTasks] = useState<Task[]>(seed?.tasks ?? []);
   const [tasksReady, setTasksReady] = useState(Boolean(demo));
+  const [entries, setEntries] = useState<TimeEntry[]>(seed?.entries ?? []);
+  const [entriesReady, setEntriesReady] = useState(Boolean(demo));
   const [loading, setLoading] = useState(!demo);
   const [error, setError] = useState<string | null>(null);
 
@@ -181,11 +212,15 @@ export function AdminDataProvider({ email, demo, children }: { email: string; de
     if (demo) return;
     const sb = supabase();
     setLoading(true);
-    const [enq, pst, tsk] = await Promise.all([
+    const since = new Date(Date.now() - 400 * 86400000).toISOString().slice(0, 10);
+    const [enq, pst, tsk, tim] = await Promise.all([
       sb.from("enquiries").select("*").order("created_at", { ascending: false }).limit(2000),
       sb.from("posts").select(POST_COLUMNS).order("created_at", { ascending: false }),
       sb.from("tasks").select("*").order("created_at", { ascending: true }),
+      sb.from("time_entries").select("*").gte("day", since).order("day", { ascending: false }).limit(5000),
     ]);
+    setEntriesReady(!tim.error);
+    setEntries((tim.data as TimeEntry[] | null) ?? []);
     // Tasks live in their own table (supabase/tasks.sql); a missing table only affects the Tasks page.
     setTasksReady(!tsk.error);
     setTasks((tsk.data as Task[] | null) ?? []);
@@ -213,6 +248,9 @@ export function AdminDataProvider({ email, demo, children }: { email: string; de
       posts,
       tasks,
       tasksReady,
+      entries,
+      entriesReady,
+      demo: Boolean(demo),
       loading,
       error,
       reload,
@@ -280,6 +318,22 @@ export function AdminDataProvider({ email, demo, children }: { email: string; de
         }
         setTasks((l) => l.filter((t) => t.id !== id));
       },
+      async logTime(input) {
+        if (demo) {
+          setEntries((l) => [{ id: `e-${Date.now()}`, note: "", task_id: null, created_at: new Date().toISOString(), ...input } as TimeEntry, ...l]);
+          return;
+        }
+        const { data, error: e } = await supabase().from("time_entries").insert(input).select("*").single();
+        if (e) throw new Error(e.message);
+        setEntries((l) => [data as TimeEntry, ...l]);
+      },
+      async deleteTimeEntry(id) {
+        if (!demo) {
+          const { error: e } = await supabase().from("time_entries").delete().eq("id", id);
+          if (e) throw new Error(e.message);
+        }
+        setEntries((l) => l.filter((x) => x.id !== id));
+      },
       async loadHome() {
         const { data } = await supabase().from("site_content").select("value").eq("key", "home").maybeSingle();
         return mergeHome(data?.value);
@@ -291,7 +345,7 @@ export function AdminDataProvider({ email, demo, children }: { email: string; de
         if (e) throw new Error(e.message);
       },
     }),
-    [email, enquiries, posts, tasks, tasksReady, demo, loading, error, reload],
+    [email, enquiries, posts, tasks, tasksReady, entries, entriesReady, demo, loading, error, reload],
   );
 
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;

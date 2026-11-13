@@ -1,6 +1,8 @@
 import {
   ArrowSquareOut,
   Article,
+  ChartBar,
+  ChartLineUp,
   ChartPieSlice,
   EnvelopeSimple,
   List,
@@ -16,12 +18,24 @@ import { type AuthState, AdminDataProvider, signOut, useAdminAuth, useAdminData 
 import { ToastProvider, initials } from "./ui";
 import "./admin.css";
 
-const nav = [
-  { to: "/admin", label: "Dashboard", icon: ChartPieSlice, exact: true },
-  { to: "/admin/content", label: "Homepage", icon: PencilRuler },
-  { to: "/admin/posts", label: "Blog posts", icon: Article },
-  { to: "/admin/enquiries", label: "Enquiries", icon: EnvelopeSimple },
-  { to: "/admin/tasks", label: "Tasks", icon: ListChecks },
+const navGroups = [
+  {
+    label: "Manage",
+    items: [
+      { to: "/admin", label: "Dashboard", icon: ChartPieSlice, exact: true },
+      { to: "/admin/tasks", label: "Tasks", icon: ListChecks },
+      { to: "/admin/insights", label: "Insights", icon: ChartBar },
+    ],
+  },
+  {
+    label: "Website",
+    items: [
+      { to: "/admin/content", label: "Homepage", icon: PencilRuler },
+      { to: "/admin/posts", label: "Blog posts", icon: Article },
+      { to: "/admin/enquiries", label: "Enquiries", icon: EnvelopeSimple },
+      { to: "/admin/analytics", label: "Analytics", icon: ChartLineUp },
+    ],
+  },
 ] as const;
 
 function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
@@ -39,20 +53,24 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
           <X size={20} />
         </button>
       </div>
-      <p className="nma-side__label">Manage</p>
-      <nav className="nma-side__nav">
-        {nav.map(({ to, label, icon: Icon, ...rest }) => {
-          const exact = "exact" in rest && rest.exact;
-          const active = exact ? path === to || path === `${to}/` : path.startsWith(to);
-          return (
-            <Link className={active ? "is-active" : ""} key={to} onClick={onClose} to={to}>
-              <Icon aria-hidden size={20} weight={active ? "fill" : "duotone"} />
-              <span>{label}</span>
-              {to === "/admin/enquiries" && fresh > 0 ? <b className="nma-badge">{fresh}</b> : null}
-            </Link>
-          );
-        })}
-      </nav>
+      {navGroups.map((group) => (
+        <div key={group.label}>
+          <p className="nma-side__label">{group.label}</p>
+          <nav className="nma-side__nav">
+            {group.items.map(({ to, label, icon: Icon, ...rest }) => {
+              const exact = "exact" in rest && rest.exact;
+              const active = exact ? path === to || path === `${to}/` : path.startsWith(to);
+              return (
+                <Link className={active ? "is-active" : ""} key={to} onClick={onClose} to={to}>
+                  <Icon aria-hidden size={20} weight={active ? "fill" : "duotone"} />
+                  <span>{label}</span>
+                  {to === "/admin/enquiries" && fresh > 0 ? <b className="nma-badge">{fresh}</b> : null}
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+      ))}
       <div className="nma-side__foot">
         <a className="nma-side__view" href="/" rel="noreferrer" target="_blank">
           <ArrowSquareOut size={18} />

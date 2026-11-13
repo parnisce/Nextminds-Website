@@ -36,6 +36,7 @@ import type { Icon } from "@phosphor-icons/react";
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 
+import { trackEvent } from "@/components/analytics/tracker";
 import { supabase } from "@/lib/supabase";
 import type { FormEvent, ReactNode } from "react";
 
@@ -416,6 +417,7 @@ export function ContactPage() {
       return;
     }
     form.reset();
+    trackEvent("message", "Contact form sent");
     setState("sent");
   };
 
