@@ -122,7 +122,7 @@ type AdminData = {
   demo: boolean;
   loading: boolean;
   error: string | null;
-  reload: () => Promise<void>;
+  reload: (silent?: boolean) => Promise<void>;
   setEnquiryStatus: (id: string, status: EnquiryStatus) => Promise<void>;
   deleteEnquiry: (id: string) => Promise<void>;
   savePost: (input: PostInput) => Promise<Post>;
@@ -208,10 +208,10 @@ export function AdminDataProvider({ email, demo, children }: { email: string; de
   const [loading, setLoading] = useState(!demo);
   const [error, setError] = useState<string | null>(null);
 
-  const reload = useCallback(async () => {
+  const reload = useCallback(async (silent = false) => {
     if (demo) return;
     const sb = supabase();
-    setLoading(true);
+    if (!silent) setLoading(true);
     const since = new Date(Date.now() - 400 * 86400000).toISOString().slice(0, 10);
     const [enq, pst, tsk, tim] = await Promise.all([
       sb.from("enquiries").select("*").order("created_at", { ascending: false }).limit(2000),
@@ -239,7 +239,19 @@ export function AdminDataProvider({ email, demo, children }: { email: string; de
 
   useEffect(() => {
     void reload();
-  }, [reload]);
+    if (demo) return;
+    // Pick up new enquiries without a manual refresh: every 20s and whenever the tab regains focus.
+    const quiet = () => void reload(true);
+    const timer = window.setInterval(quiet, 20000);
+    const onVisible = () => document.visibilityState === "visible" && quiet();
+    document.addEventListener("visibilitychange", onVisible);
+    window.addEventListener("focus", quiet);
+    return () => {
+      window.clearInterval(timer);
+      document.removeEventListener("visibilitychange", onVisible);
+      window.removeEventListener("focus", quiet);
+    };
+  }, [reload, demo]);
 
   const value = useMemo<AdminData>(
     () => ({
