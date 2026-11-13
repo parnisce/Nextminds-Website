@@ -4,6 +4,7 @@ import {
   ChartPieSlice,
   EnvelopeSimple,
   List,
+  ListChecks,
   PencilRuler,
   SignOut,
   X,
@@ -20,6 +21,7 @@ const nav = [
   { to: "/admin/content", label: "Homepage", icon: PencilRuler },
   { to: "/admin/posts", label: "Blog posts", icon: Article },
   { to: "/admin/enquiries", label: "Enquiries", icon: EnvelopeSimple },
+  { to: "/admin/tasks", label: "Tasks", icon: ListChecks },
 ] as const;
 
 function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {

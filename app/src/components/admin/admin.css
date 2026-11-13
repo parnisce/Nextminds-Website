@@ -1349,3 +1349,338 @@
   background: transparent;
   box-shadow: none;
 }
+
+/* Tasks board -------------------------------------------------------------- */
+.nma-count {
+  color: var(--nma-muted);
+  font-weight: 400;
+}
+
+.nma-seg {
+  display: inline-flex;
+  padding: 0.25rem;
+  border: 1px solid var(--nma-line);
+  border-radius: 0.8rem;
+  background: var(--nma-panel);
+}
+
+.nma-seg button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.9rem;
+  border: 0;
+  border-radius: 0.6rem;
+  background: transparent;
+  color: var(--nma-muted);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.nma-seg button.is-active {
+  background: var(--nma-panel2);
+  color: var(--nma-ink);
+  box-shadow: inset 0 0 0 1px var(--nma-line);
+}
+
+.nma-board {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(15rem, 1fr));
+  gap: 1rem;
+  align-items: start;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+
+.nma-col {
+  min-height: 12rem;
+  padding: 1rem;
+  border: 1px solid var(--nma-line);
+  border-radius: 1.1rem;
+  background: linear-gradient(180deg, var(--nma-panel), #0a1b27);
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.nma-col.is-over {
+  border-color: var(--nma-accent);
+  background: rgb(0 161 214 / 8%);
+}
+
+.nma-col__head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.9rem;
+}
+
+.nma-col__head small {
+  color: var(--nma-muted);
+}
+
+.nma-dot {
+  width: 0.6rem;
+  height: 0.6rem;
+  flex: none;
+  border-radius: 50%;
+  background: var(--nma-muted);
+}
+
+.nma-dot--violet {
+  background: #8b7cf6;
+}
+
+.nma-dot--red {
+  background: var(--nma-red);
+}
+
+.nma-dot--green {
+  background: var(--nma-green);
+}
+
+.nma-col__body {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.nma-col__add {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.5rem;
+  border: 0;
+  border-radius: 0.7rem;
+  background: transparent;
+  color: var(--nma-muted);
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.nma-col__add:hover {
+  background: var(--nma-panel2);
+  color: var(--nma-ink);
+}
+
+.nma-task {
+  display: grid;
+  gap: 0.65rem;
+  padding: 1rem;
+  border: 1px solid var(--nma-line);
+  border-radius: 0.9rem;
+  background: var(--nma-panel2);
+  cursor: grab;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.nma-task:hover {
+  border-color: #3a6580;
+  transform: translateY(-2px);
+}
+
+.nma-task:active {
+  cursor: grabbing;
+}
+
+.nma-task.is-running {
+  border-color: var(--nma-accent);
+  box-shadow: 0 0 0 1px rgb(0 161 214 / 35%);
+}
+
+.nma-task__status {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--nma-muted);
+  font-family: var(--nm-mono, ui-monospace, monospace);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.nma-task__status i {
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.nma-task__status--in_progress {
+  color: #a79bff;
+}
+
+.nma-task__status--blocked {
+  color: var(--nma-red);
+}
+
+.nma-task__status--done {
+  color: var(--nma-green);
+}
+
+.nma-task h3 {
+  font-size: 1.02rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.nma-task__desc {
+  color: var(--nma-muted);
+  font-size: 0.88rem;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.nma-task__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.nma-chip {
+  padding: 0.12rem 0.6rem;
+  border: 1px solid var(--nma-line);
+  border-radius: 0.5rem;
+  color: var(--nma-muted);
+  font-size: 0.78rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.nma-chip--high {
+  border-color: rgb(242 122 138 / 40%);
+  background: rgb(242 122 138 / 12%);
+  color: #ff9aa7;
+}
+
+.nma-chip--medium {
+  border-color: rgb(242 184 75 / 40%);
+  background: rgb(242 184 75 / 12%);
+  color: var(--nma-amber);
+}
+
+.nma-chip--low {
+  border-color: rgb(56 201 160 / 35%);
+  background: rgb(56 201 160 / 10%);
+  color: var(--nma-green);
+}
+
+.nma-chip--overdue {
+  border-color: rgb(242 122 138 / 55%);
+  background: rgb(242 122 138 / 10%);
+  color: #ff9aa7;
+}
+
+.nma-chip--tag {
+  color: var(--nma-ink);
+}
+
+.nma-task__foot {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.nma-task__time {
+  color: var(--nma-muted);
+  font-family: var(--nm-mono, ui-monospace, monospace);
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+
+.nma-task__check {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--nma-muted);
+  font-family: var(--nm-mono, ui-monospace, monospace);
+  font-size: 0.8rem;
+}
+
+.nma-task__play {
+  display: grid;
+  place-items: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  margin-left: auto;
+  border: 1px solid var(--nma-line);
+  border-radius: 50%;
+  background: var(--nma-bg);
+  color: var(--nma-ink);
+  cursor: pointer;
+}
+
+.nma-task__play:hover,
+.nma-task.is-running .nma-task__play {
+  border-color: var(--nma-accent);
+  background: var(--nma-accent);
+  color: #04202c;
+}
+
+.nma-tasklist button {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.8rem 0.6rem;
+  border: 0;
+  border-radius: 0.8rem;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.nma-tasklist button:hover {
+  background: var(--nma-panel2);
+}
+
+.nma-tasklist .is-done {
+  color: var(--nma-muted);
+  text-decoration: line-through;
+}
+
+.nma-modal__card--wide {
+  width: min(40rem, 100%);
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
+}
+
+.nma-modal__card--wide .nma-card__head p {
+  margin: 0.15rem 0 0;
+}
+
+.nma-check {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.nma-check li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.nma-check label {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--nma-ink);
+}
+
+.nma-check .is-done {
+  color: var(--nma-muted);
+  text-decoration: line-through;
+}
+
+.nma-check__add {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+}
+
+@media (max-width: 1180px) {
+  .nma-board {
+    grid-template-columns: repeat(4, 17rem);
+  }
+}
