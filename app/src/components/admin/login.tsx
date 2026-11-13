@@ -1,4 +1,4 @@
-import { ArrowLeft, Eye, EyeSlash, LockKey, ShieldCheck } from "@phosphor-icons/react";
+import { ArrowLeft, Eye, EyeSlash, LockKey } from "@phosphor-icons/react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState, type FormEvent } from "react";
 
@@ -42,17 +42,6 @@ export function LoginPage() {
           <h2>
             Run your website <span>from one place.</span>
           </h2>
-          <ul>
-            <li>
-              <ShieldCheck size={22} weight="duotone" /> Edit your homepage text
-            </li>
-            <li>
-              <ShieldCheck size={22} weight="duotone" /> Publish blog posts
-            </li>
-            <li>
-              <ShieldCheck size={22} weight="duotone" /> Answer contact enquiries
-            </li>
-          </ul>
         </aside>
 
         <form className="nma-login__form" onSubmit={onSubmit}>

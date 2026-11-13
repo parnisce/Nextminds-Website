@@ -1165,22 +1165,6 @@
   color: var(--nma-accent);
 }
 
-.nma-login__brand ul {
-  display: grid;
-  gap: 0.7rem;
-  color: var(--nma-muted);
-}
-
-.nma-login__brand li {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-}
-
-.nma-login__brand li svg {
-  color: var(--nma-green);
-}
-
 .nma-login__form {
   display: grid;
   align-content: center;
