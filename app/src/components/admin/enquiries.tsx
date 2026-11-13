@@ -1,11 +1,12 @@
-import { Archive, ArrowBendUpLeft, DownloadSimple, EnvelopeSimple, MagnifyingGlass, Phone, Trash, Tray, X } from "@phosphor-icons/react";
+import { Archive, ArrowBendUpLeft, ArrowClockwise, DownloadSimple, EnvelopeSimple, MagnifyingGlass, Phone, Trash, Tray, X } from "@phosphor-icons/react";
 import { useNavigate } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 
 import { type Enquiry, type EnquiryStatus, useAdminData } from "./data";
 import { Confirm, PageHead, StatusPill, initials, statusLabel, timeAgo, useToast } from "./ui";
 
-const filters: ("all" | EnquiryStatus)[] = ["all", "new", "read", "replied", "archived"];
+type Filter = "inbox" | "everything" | EnquiryStatus;
+const filters: Filter[] = ["everything", "inbox", "new", "read", "replied", "archived"];
 
 const csvCell = (v: string | null) => `"${(v ?? "").replace(/"/g, '""')}"`;
 
@@ -125,14 +126,17 @@ function Detail({ q, onClose }: { q: Enquiry; onClose: () => void }) {
 }
 
 export function EnquiriesPage({ id }: { id?: string }) {
-  const { enquiries, loading, setEnquiryStatus } = useAdminData();
+  const { enquiries, loading, reload, setEnquiryStatus } = useAdminData();
   const navigate = useNavigate();
-  const [filter, setFilter] = useState<"all" | EnquiryStatus>("all");
+  const [filter, setFilter] = useState<Filter>("everything");
   const [q, setQ] = useState("");
 
   const counts = useMemo(() => {
-    const c: Record<string, number> = { all: enquiries.length };
-    for (const e of enquiries) c[e.status] = (c[e.status] ?? 0) + 1;
+    const c: Record<string, number> = { everything: enquiries.length, inbox: 0 };
+    for (const e of enquiries) {
+      c[e.status] = (c[e.status] ?? 0) + 1;
+      if (e.status !== "archived") c.inbox = (c.inbox ?? 0) + 1;
+    }
     return c;
   }, [enquiries]);
 
@@ -140,7 +144,7 @@ export function EnquiriesPage({ id }: { id?: string }) {
     () =>
       enquiries.filter(
         (e) =>
-          (filter === "all" ? e.status !== "archived" : e.status === filter) &&
+          (filter === "everything" ? true : filter === "inbox" ? e.status !== "archived" : e.status === filter) &&
           (!q || `${e.name} ${e.email} ${e.service ?? ""} ${e.message}`.toLowerCase().includes(q.toLowerCase())),
       ),
     [enquiries, filter, q],
@@ -159,11 +163,16 @@ export function EnquiriesPage({ id }: { id?: string }) {
     <>
       <PageHead
         actions={
-          <button className="nma-btn" disabled={enquiries.length === 0} onClick={() => exportCsv(enquiries)} type="button">
-            <DownloadSimple size={18} /> Export CSV
-          </button>
+          <>
+            <button className="nma-btn" disabled={loading} onClick={() => void reload()} type="button">
+              <ArrowClockwise size={18} /> Refresh
+            </button>
+            <button className="nma-btn" disabled={enquiries.length === 0} onClick={() => exportCsv(enquiries)} type="button">
+              <DownloadSimple size={18} /> Export CSV
+            </button>
+          </>
         }
-        sub="Messages sent from your Contact Us page."
+        sub={`Every message sent from your Contact Us page. ${enquiries.length} in total.`}
         title="Enquiries"
       />
 
@@ -177,8 +186,8 @@ export function EnquiriesPage({ id }: { id?: string }) {
             <div className="nma-chips">
               {filters.map((f) => (
                 <button className={filter === f ? "is-active" : ""} key={f} onClick={() => setFilter(f)} type="button">
-                  {f === "all" ? "Inbox" : statusLabel[f]}
-                  <b>{f === "all" ? (counts.all ?? 0) - (counts.archived ?? 0) : (counts[f] ?? 0)}</b>
+                  {f === "everything" ? "All" : f === "inbox" ? "Inbox" : statusLabel[f]}
+                  <b>{counts[f] ?? 0}</b>
                 </button>
               ))}
             </div>
